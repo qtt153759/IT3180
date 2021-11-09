@@ -1,7 +1,7 @@
 const {Sequelize, DataTypes} = require("sequelize");
 
 module.exports = (sequelize) => {
-    const Demographics = sequelize.define(
+    return sequelize.define(
         "demographics",
         {
             id: {
@@ -15,7 +15,7 @@ module.exports = (sequelize) => {
                 // field:
             },
             last_name: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(100),
 
             },
             alias: {
@@ -72,13 +72,19 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 type: DataTypes.DATE,
             },
-            update_at: {
+            updated_at: {
                 allowNull: false,
                 type: DataTypes.DATE,
             },
+        },
+        {
+            timestamps: true,
+            underscored: true,
+            createdAt: "created_at",
+            updatedAt: "updated_at",
         }
 
     )
 
-    return Demographics;
+
 }

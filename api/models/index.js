@@ -24,6 +24,7 @@ const db = {
     sequelize: sequelize,
 }
 
-db.demographics = require("./demographics.model")(sequelize),
+db.demographics = require("./demographics.model")(sequelize)
+db.residence = require("./residence.model")(sequelize)
 
 module.exports = db;

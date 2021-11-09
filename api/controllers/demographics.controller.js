@@ -1,7 +1,9 @@
 const db = require("../models")
 const Demographics = db.demographics;
 
+// Created and save a new demographics
 exports.create = (req, res) => {
+    console.log(req.body)
     if(!req.body) {
         res.status(400).send({
             message: "body cannot be empty!"
@@ -12,6 +14,21 @@ exports.create = (req, res) => {
     const demographics = {
         first_name: req.body.first_name,
         last_name: req.body.last_name,
+        status: req.body.status,
+        alias: req.body.alias,
+        nation: req.body.nation,
+        birth_day: req.body.birth_day,
+        birth_place: req.body.birth_place,
+        job: req.body.job,
+        job_address: req.body.job_address,
+        identity_card_number: req.body.identity_card_number,
+        identity_card_create_date: req.body.identity_card_create_date,
+        identity_card_create_address: req.body.identity_card_create_address,
+        register_residence_date: req.body.register_residence_date,
+        last_resident_address: req.body.last_resident_address,
+        relationship_with_header: req.body.relationship_with_header,
+        role: req.body.role,
+        status: req.body.status,
     }
 
     Demographics.create(demographics).then((data, err) => {
@@ -23,4 +40,21 @@ exports.create = (req, res) => {
 
         res.send(data);
     })
+}
+
+// Retrieve all demographics from the database
+exports.retrieveAll = (req, res) => {
+     Demographics.findAll()
+         .then(
+         (data) => {
+             res.send({
+                 data: data,
+             })
+         }
+     )
+         .catch((err) => {
+         res.send({
+             message: err.message || "Some error occurred while retrieving demographics"
+         })
+     })
 }
