@@ -19,6 +19,8 @@ db.sequelize.sync().then((data, err) =>{
 });
 
 require("./routes/demographics.route")(app);
+require("./routes/residence.route")(app);
+require("./routes/address.route")(app);
 
 app.listen(3000, () => {
     console.log(`Server is running on port 3000`);

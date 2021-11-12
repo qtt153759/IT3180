@@ -3,7 +3,6 @@ const Demographics = db.demographics;
 
 // Created and save a new demographics
 exports.create = (req, res) => {
-    console.log(req.body)
     if(!req.body) {
         res.status(400).send({
             message: "body cannot be empty!"
