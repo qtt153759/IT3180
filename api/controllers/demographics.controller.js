@@ -11,48 +11,48 @@ exports.create = (req, res) => {
 	}
 
 	const demographics = {
-		first_name: req.body.first_name,
-		last_name: req.body.last_name,
+		firstname: req.body.firstname,
+		lastname: req.body.lastname,
 		status: req.body.status,
 		alias: req.body.alias,
 		nation: req.body.nation,
-		birth_day: req.body.birth_day,
-		birth_place: req.body.birth_place,
+		birthday: req.body.birthday,
+		birthPlace: req.body.birth_place,
 		job: req.body.job,
-		job_address: req.body.job_address,
-		identity_card_number: req.body.identity_card_number,
-		identity_card_create_date: req.body.identity_card_create_date,
-		identity_card_create_address: req.body.identity_card_create_address,
-		register_residence_date: req.body.register_residence_date,
-		last_resident_address: req.body.last_resident_address,
-		relationship_with_header: req.body.relationship_with_header,
+		jobAddress: req.body.job_address,
+		identityCardNumber: req.body.identity_card_number,
+		identityCardCreateDate: req.body.identity_card_create_date,
+		identityCardCreateAddress: req.body.identity_card_create_address,
+		registerResidenceDate: req.body.register_residence_date,
+		lastResidentAddress: req.body.last_resident_address,
+		relationshipWithHeader: req.body.relationship_with_header,
 		role: req.body.role,
 		status: req.body.status,
 	};
 
-	Demographics.create(demographics).then((data, err) => {
-		if (err) {
+	Demographics.create(demographics)
+		.then((data) => {
+			res.send(data);
+		})
+		.catch((err) => {
 			res.status(500).send({
 				message:
 					err.message ||
 					"Some error occurred while creating the Book.",
 			});
-		}
-
-		res.send(data);
-	});
+		});
 };
 
 // Retrieve all demographics from the database
 exports.retrieveAll = (req, res) => {
-	Demographics.findAll()
+	Demographics.findAll({ where: { isDeleted: false } })
 		.then((data) => {
-			res.send({
+			return res.send({
 				data: data,
 			});
 		})
 		.catch((err) => {
-			res.send({
+			return res.send({
 				message:
 					err.message ||
 					"Some error occurred while retrieving demographics",
@@ -61,18 +61,57 @@ exports.retrieveAll = (req, res) => {
 };
 
 exports.update = (req, res) => {
-	const id = req.params.id;
+	let userId = req.body.user_id;
+	let firstName = req.body.firstname;
+	let lastName = req.body.lastname;
 
-	// Demographics.update();
+	console.log(userId, firstName, lastName);
+
+	let updateField = {};
+	if (firstName) updateField.firstname = req.body.firstname;
+	if (lastName) updateField.lastname = req.body.lastname;
+
+	Demographics.update(updateField, {
+		where: {
+			id: userId,
+		},
+	})
+		.then(async (_) => {
+			let demographicsInfo = await Demographics.findOne({ id: userId });
+
+			return res.send({
+				message: "update success",
+				data: demographicsInfo,
+			});
+		})
+		.catch((err) => {
+			return res.send({
+				message: err || "update fail",
+			});
+		});
 };
 
 exports.delete = (req, res) => {
 	const id = req.params.id;
-	Demographics.delete()
+	Demographics.update(
+		{
+			isDeleted: true,
+		},
+		{
+			where: {
+				id: id,
+			},
+		}
+	)
 		.then((data) => {
-			console.log(data);
+			return res.send({
+				message: "delete success",
+				data: data,
+			});
 		})
 		.catch((err) => {
-			console.log(err);
+			return res.send({
+				message: err || "delete false",
+			});
 		});
 };

@@ -10,11 +10,11 @@ module.exports = (sequelize) => {
 				autoIncrement: true,
 				primaryKey: true,
 			},
-			first_name: {
+			firstname: {
 				type: DataTypes.STRING(255),
 				// field:
 			},
-			last_name: {
+			lastname: {
 				type: DataTypes.STRING(100),
 			},
 			alias: {
@@ -23,34 +23,34 @@ module.exports = (sequelize) => {
 			nation: {
 				type: DataTypes.INTEGER,
 			},
-			birth_day: {
+			birthday: {
 				type: DataTypes.DATE,
 			},
-			birth_address: {
+			birthAddress: {
 				type: DataTypes.STRING,
 			},
 			job: {
 				type: DataTypes.STRING,
 			},
-			job_address: {
+			jobAddress: {
 				type: DataTypes.STRING,
 			},
-			identity_card_number: {
+			identityCardNumber: {
 				type: DataTypes.INTEGER,
 			},
-			identity_card_create_date: {
+			identityCardCreateDate: {
 				type: DataTypes.STRING,
 			},
-			identity_card_address: {
+			identityCardAddress: {
 				type: DataTypes.STRING,
 			},
-			register_resident_date: {
+			registerResidentDate: {
 				type: DataTypes.STRING,
 			},
-			last_resident_address: {
+			lastResidentAddress: {
 				type: DataTypes.STRING,
 			},
-			relationship_with_header: {
+			relationshipWithHeader: {
 				type: DataTypes.STRING,
 			},
 			role: {
@@ -58,25 +58,26 @@ module.exports = (sequelize) => {
 			},
 			status: {
 				allowNull: false,
-				type: DataTypes.STRING,
+				type: DataTypes.INTEGER,
 			},
-			created_at: {
+			createdAt: {
 				allowNull: false,
 				type: DataTypes.DATE,
 			},
-			updated_at: {
+			updatedAt: {
 				allowNull: false,
 				type: DataTypes.DATE,
 			},
-			is_deleted: {
+			isDeleted: {
 				type: DataTypes.BOOLEAN,
+				defaultValue: false,
 			},
 		},
 		{
 			timestamps: true,
 			underscored: true,
-			createdAt: "created_at",
-			updatedAt: "updated_at",
+			createdAt: "createdAt",
+			updatedAt: "updatedAt",
 		}
 	);
 };

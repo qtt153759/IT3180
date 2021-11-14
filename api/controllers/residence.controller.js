@@ -10,10 +10,10 @@ exports.create = (req, res) => {
 	}
 
 	const residence = {
-		header_id: req.body.header_id,
-		province_id: req.body.province_id,
-		district_id: req.body.district_id,
-		ward_id: req.body.ward_id,
+		headerId: req.body.header_id,
+		provinceId: req.body.province_id,
+		districtId: req.body.district_id,
+		wardId: req.body.ward_id,
 		address: req.body.address,
 	};
 
