@@ -1,5 +1,5 @@
 const db = require("../models");
-const Residence = db.residence;
+const Residence = require("../models/residence.model");
 
 // Created and save a new residence
 exports.create = (req, res) => {
@@ -32,7 +32,7 @@ exports.create = (req, res) => {
 
 // Retrieve all residence record
 exports.getAll = (req, res) => {
-	Residence.findAll()
+	Residence.findAll({ where: { isDeleted: false } })
 		.then((data) => {
 			res.status(200).send({
 				data: data,
@@ -44,3 +44,28 @@ exports.getAll = (req, res) => {
 			});
 		});
 };
+
+exports.update = (req, res) => {
+	if (!req.body)
+		return res.send({
+			message: "empty body",
+		});
+
+	let updatedField = {};
+
+	let id = req.body.id;
+	if (req.body.header_id) updatedField.headerId = req.body.header_id;
+	if (req.body.province_id) updatedField.provinceId = req.body.province_id;
+	if (req.body.district_id) updatedField.districtId = req.body.district_id;
+	if (req.body.ward_id) updatedField.wardId = req.body.ward_id;
+	if (req.body.address) updatedField.address = req.body.address;
+
+	Residence.update(updatedField, {
+		where: {
+			id: id,
+			isDeleted: false,
+		},
+	});
+};
+
+exports.delete = (req, res) => {};

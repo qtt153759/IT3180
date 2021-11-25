@@ -1,6 +1,7 @@
 const { DataTypes } = require("sequelize");
+const sequelize = require("./index");
 
-module.exports = (sequelize) => {
+module.exports = () => {
 	return sequelize.define(
 		"residence",
 		{
@@ -32,6 +33,10 @@ module.exports = (sequelize) => {
 			updatedAt: {
 				type: DataTypes.DATE,
 				allowNull: false,
+			},
+			isDeleted: {
+				type: DataTypes.BOOLEAN,
+				defaultValue: false,
 			},
 		},
 		{

@@ -5,8 +5,8 @@ module.exports = (app) => {
 
 	router.post("/", demographicsController.create);
 	router.get("/", demographicsController.retrieveAll);
-	router.post("/update", demographicsController.update);
-	router.get("/delete/:id", demographicsController.delete);
+	router.put("/update", demographicsController.update);
+	router.delete("/delete/:id", demographicsController.delete);
 
 	app.use("/api/demographics", router);
 };
