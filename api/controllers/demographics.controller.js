@@ -1,21 +1,17 @@
 const Demographics = require("../models/demographics.model");
 const createHttpError = require("http-errors");
+const {demographicsValidator}=require("../helpers/validator");
 
 // Created and save a new demographics
-exports.create = async (req, res, next) => {
+let createDemographics =async (req, res, next) => {
 	try {
-		if (!req.body) {
-			res.status(400).send({
-				message: "body cannot be empty!",
-			});
-			return;
-		}
-
+		const{error}=demographicsValidator(req.body);
+		if(error)return res.status(400).send(error.details[0].message);
 		let { first_name } = req.body;
 
 		const exist = await Demographics.findOne({
 			where: {
-				firstname: first_name,
+				firstname: req.body.firstname,
 				isDeleted: false,
 			},
 		});
@@ -37,9 +33,9 @@ exports.create = async (req, res, next) => {
 };
 
 // Retrieve all demographics from the database
-exports.retrieveAll = (req, res, next) => {
+let retrieveAllDemographic = async(req, res, next) => {
 	try {
-		Demographics.findAll({ where: { isDeleted: false } })
+		await Demographics.findAll({ where: { isDeleted: false } })
 			.then((data) => {
 				res.send({
 					data: data,
@@ -53,28 +49,31 @@ exports.retrieveAll = (req, res, next) => {
 	}
 };
 
-exports.update = (req, res, next) => {
+let updateDemographic =async (req, res) => {
 	try {
-		let { user_id: userId, firstname, lastname } = req.body;
+		if (!req.body.id) {
+			res.status(400).send({
+				message: "you don't have id",
+			});
+			return;
+			//throw createHttpError(500, "empty");
+		}
+		const{error}=demographicsValidator(req.body);
+		if(error)return res.status(400).send(error.details[0].message);
 
-		let updateField = {};
-		if (firstname) updateField.firstname = firstname;
-		if (lastname) updateField.lastname = req.body.lastname;
-
-		Demographics.update(updateField, {
+		
+		Demographics.update(req.body, {
 			where: {
-				id: userId,
+				id: req.body.id,
 				isDeleted: false,
 			},
 		})
 			.then(async (_) => {
 				Demographics.findOne({
-					id: userId,
+					id: req.body.id,
 				})
 					.then((data) => {
-						res.send({
-							data: demographicsInfo,
-						});
+						res.send(data)
 					})
 					.catch((err) => {
 						throw createHttpError(500, err);
@@ -88,9 +87,10 @@ exports.update = (req, res, next) => {
 	}
 };
 
-exports.delete = (req, res, next) => {
+let deleteDemographics = async(req, res, next) => {
 	try {
 		const id = req.params.id;
+		console.log(req.params.id);
 		Demographics.update({
 			where: {
 				id: id,
@@ -110,3 +110,9 @@ exports.delete = (req, res, next) => {
 		next(err);
 	}
 };
+module.exports={
+	createDemographics:createDemographics,
+	retrieveAllDemographic:retrieveAllDemographic,
+	deleteDemographics:deleteDemographics,
+	updateDemographic:updateDemographic
+}
