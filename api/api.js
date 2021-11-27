@@ -27,6 +27,7 @@ sequelize
 require("./routes/demographics.route")(app);
 require("./routes/residence.route")(app);
 require("./routes/address.route")(app);
+require("./routes/account.route")(app);
 
 app.use((req, res, next) => {
 	// const error = new Error("not found");
