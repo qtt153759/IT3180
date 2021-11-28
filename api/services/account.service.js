@@ -1,4 +1,6 @@
 const Account= require("../models/account.model");
+const bcrypt =require ("bcryptjs")
+const salt=bcrypt.genSaltSync(10);
 
 let handleUserLogin= (dataLogin)=>{
     return new Promise(async(resolve,reject)=>{
@@ -14,7 +16,8 @@ let handleUserLogin= (dataLogin)=>{
                     raw:true
                 });
                 if(user){
-                    if(user.password===password){
+                    let check=await bcrypt.compareSync(password,user.password);
+                    if(check){
                         userData.errCode=0;
                         userData.errMessage="Ok";
                         delete user.password;//sau khi attributes ma muon an thuoc tinh nao thi delete
@@ -47,9 +50,10 @@ let createUserAccount=(dataRegister)=>{
                 userData.errCode=1;
                 userData.errMessage="Your email has already exsited"
             }else{
+                let hashPasswordFromBcrypt=await hashUserPassword(dataRegister.password);
                 await Account.create({
                     email:dataRegister.email,
-                    password:dataRegister.password,
+                    password:hashPasswordFromBcrypt,
                     role:dataRegister.role,
                     demographic_id:dataRegister.demographic_id
                 })
@@ -77,6 +81,16 @@ let checkUserEmail=async(userEmail)=>{
             }
         }catch(err){
             reject(err);
+        }
+    })
+}
+let hashUserPassword=(password)=>{
+    return new Promise(async(resolve,reject)=>{
+        try{
+            let hashPassword=await bcrypt.hashSync(password,salt);
+            resolve(hashPassword);
+        }catch(ex){
+            reject(ex);
         }
     })
 }
