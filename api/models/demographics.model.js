@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("./index");
 
-const Demographics=sequelize.define(
+const Demographics = sequelize.define(
 	"demographics",
 	{
 		id: {
@@ -27,7 +27,6 @@ const Demographics=sequelize.define(
 		},
 		birthday: {
 			type: DataTypes.DATE,
-			allowNull: false,
 		},
 		birthAddress: {
 			type: DataTypes.STRING,
@@ -84,8 +83,11 @@ const Demographics=sequelize.define(
 	}
 );
 
-Demographics.associate=models=>{
-	Demographics.belongsTo(models.Account,{foreignKey :'id',as:'demographicData'});
-}
+Demographics.associate = (models) => {
+	Demographics.belongsTo(models.Account, {
+		foreignKey: "id",
+		as: "demographicData",
+	});
+};
 
-module.exports=Demographics;
+module.exports = Demographics;
