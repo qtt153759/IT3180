@@ -1,19 +1,19 @@
 {
-  "scripts": {
-    "start": "node api/api.js",
-    "dev": "nodemon"
-  },
-  "dependencies": {
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1",
-    "http-errors": "^1.8.0",
-    "joi": "^17.4.2",
-    "mariadb": "^2.5.5",
-    "mysql2": "^2.3.2",
-    "sequelize": "^6.8.0"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.14",
-    "prettier": "^2.4.1"
-  }
+	"scripts": {
+		"start": "node api/api.js",
+		"dev": "nodemon"
+	},
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"dotenv": "^10.0.0",
+		"express": "^4.17.1",
+		"http-errors": "^1.8.0",
+		"joi": "^17.4.2",
+		"mysql2": "^2.3.2",
+		"sequelize": "^6.8.0"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.14",
+		"prettier": "^2.4.1"
+	}
 }
