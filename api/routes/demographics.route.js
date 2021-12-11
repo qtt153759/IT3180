@@ -1,12 +1,10 @@
-module.exports = (app) => {
-	const demographicsController = require("../controllers/demographics.controller");
+const express = require("express");
+const route = express.Router();
+const demographicsController = require("../controllers/demographics.controller");
 
-	const router = require("express").Router();
+route.get("/", demographicsController.retrieveAllDemographic);
+route.post("/", demographicsController.createDemographics);
+route.put("/update", demographicsController.updateDemographic);
+route.delete("/delete/:id", demographicsController.deleteDemographics);
 
-	router.post("/", demographicsController.createDemographics);
-	router.get("/", demographicsController.retrieveAllDemographic);
-	router.put("/update", demographicsController.updateDemographic);
-	router.delete("/delete/:id", demographicsController.deleteDemographics);
-
-	app.use("/api/demographics", router);
-};
+module.exports = route;

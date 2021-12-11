@@ -1,4 +1,3 @@
-const db = require("../models");
 const Residence = require("../models/residence.model");
 
 // Created and save a new residence

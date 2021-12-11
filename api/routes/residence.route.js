@@ -1,12 +1,10 @@
-module.exports = (app) => {
-	const residenceController = require("../controllers/residence.controller");
+const express = require("express");
+const route = express.Router();
+const residenceController = require("../controllers/residence.controller");
 
-	const router = require("express").Router();
+route.get("/", residenceController.getAll);
+route.post("/", residenceController.create);
+route.put("/update", residenceController.update);
+route.delete("/delete", residenceController.delete);
 
-	router.post("/", residenceController.create);
-	router.get("/", residenceController.getAll);
-	router.post("/update", residenceController.update);
-	router.get("/delete", residenceController.delete);
-
-	app.use("/api/residence", router);
-};
+module.exports = route;

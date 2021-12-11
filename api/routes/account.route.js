@@ -1,10 +1,9 @@
-module.exports = (app) => {
-	const accountController = require("../controllers/account.controller");
+const express = require("express");
 
-	const router = require("express").Router();
+const accountController = require("../controllers/account.controller");
+const route = express.Router();
 
-	router.post("/",accountController.handleLogin);
-	router.post("/register",accountController.createAccount)
+route.post("/login", accountController.handleLogin);
+route.post("/register", accountController.createAccount);
 
-	app.use("/api/login", router);
-};
+module.exports = route;

@@ -35,8 +35,8 @@ const Account = sequelize.define(
 		updatedAt: true,
 	}
 );
-Account.associate=models=>{
-    Account.belongsTo(models.User,{foreignKey:'id',as:'demographicData'})
-}
+Account.associate = (models) => {
+	Account.belongsTo(models.User, { foreignKey: "id", as: "demographicData" });
+};
 
-module.exports= Account
+module.exports = Account;

@@ -6,8 +6,8 @@ const salt = bcrypt.genSaltSync(10);
 let handleUserLogin = (dataLogin) => {
 	return new Promise(async (resolve, reject) => {
 		try {
-			password = dataLogin.password;
-			email = dataLogin.email;
+			const password = dataLogin.password;
+			const email = dataLogin.email;
 			let userData = {};
 			let isExsit = await checkUserEmail(email);
 			if (isExsit) {
