@@ -1,47 +1,52 @@
-const Residence = require("../models/residence.model");
-
+const Residences = require("../models/residence.model");
+const createHttpError = require("http-errors");
 // Created and save a new residence
-exports.create = (req, res) => {
-	if (!req.body) {
-		res.status(400).send({
-			message: "body cannot be empty!",
-		});
-	}
-
-	const residence = {
-		headerId: req.body.header_id,
-		provinceId: req.body.province_id,
-		districtId: req.body.district_id,
-		wardId: req.body.ward_id,
-		address: req.body.address,
-	};
-
-	Residence.create(residence).then((data, err) => {
-		if (err) {
-			res.status(500).send({
-				message:
-					err.message ||
-					"Some error occurred while creating the Book.",
+exports.create = async (req, res) => {
+	try {
+		if (!req.body) {
+			res.status(400).send({
+				message: "body cannot be empty!",
 			});
 		}
-
-		res.send(data);
-	});
+		Residences.create(req.body)
+			.then((data) => {
+				res.send(data);
+			})
+			.catch((err) => {
+				throw createHttpError(500, err);
+			});
+	} catch (err) {
+		next(err);
+	}
 };
 
 // Retrieve all residence record
-exports.getAll = (req, res) => {
-	Residence.findAll({ where: { isDeleted: false } })
-		.then((data) => {
-			res.status(200).send({
-				data: data,
-			});
+exports.getAll = (req, res, next) => {
+	try {
+		let page = parseInt(req.query.page);
+		let limit = parseInt(req.query.limit);
+		if (Number.isNaN(page)) {
+			page = 1;
+		}
+		if (Number.isNaN(limit)) {
+			limit = 10;
+		}
+		Residences.findAll({
+			where: { isDeleted: false },
+			limit: limit,
+			offset: (page - 1) * limit,
 		})
-		.catch((err) => {
-			res.status(400).send({
-				message: err.message || "Error",
+			.then((data) => {
+				res.status(200).send({
+					data: data,
+				});
+			})
+			.catch((err) => {
+				throw createHttpError.BadRequest(500, err);
 			});
-		});
+	} catch (err) {
+		next(err);
+	}
 };
 
 exports.update = (req, res) => {

@@ -35,7 +35,19 @@ let createDemographics = async (req, res, next) => {
 // Retrieve all demographics from the database
 let retrieveAllDemographic = async (req, res, next) => {
 	try {
-		await Demographics.findAll({ where: { isDeleted: false } })
+		let page = parseInt(req.query.page);
+		let limit = parseInt(req.query.limit);
+		if (Number.isNaN(page)) {
+			page = 1;
+		}
+		if (Number.isNaN(limit)) {
+			limit = 10;
+		}
+		await Demographics.findAll({
+			where: { isDeleted: false },
+			limit: limit,
+			offset: (page - 1) * limit,
+		})
 			.then((data) => {
 				res.send({
 					data: data,
