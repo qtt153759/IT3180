@@ -6,12 +6,12 @@ const { demographicsValidator } = require("../helpers/validator");
 let createDemographics = async (req, res, next) => {
 	try {
 		const { error } = demographicsValidator(req.body);
-		if (error) throw createHttpError(500, error.details[0].message);
+		if (error) throw createHttpError(500, error);
 		let { firstname } = req.body; //destructuring
 
 		const exist = await Demographics.findOne({
 			where: {
-				firstname: firstname,
+				firstname,
 				isDeleted: false,
 			},
 		});
@@ -50,11 +50,11 @@ let retrieveAllDemographic = async (req, res, next) => {
 		})
 			.then((data) => {
 				res.send({
-					data: data,
+					data,
 				});
 			})
 			.catch((err) => {
-				throw createHttpError.BadRequest(500, err);
+				throw createHttpError(500, err);
 			});
 	} catch (err) {
 		next(err);
@@ -65,11 +65,10 @@ let updateDemographic = async (req, res, next) => {
 	try {
 		let { id } = req.body;
 		if (!id) {
-			throw createHttpError(500, "empty");
+			throw createHttpError(500, "empty id ");
 		}
 		const { error } = demographicsValidator(req.body);
-		if (error)
-			throw createHttpError.BadRequest(500, error.details[0].message);
+		if (error) throw createHttpError(500, error);
 
 		Demographics.update(req.body, {
 			where: {
@@ -79,7 +78,7 @@ let updateDemographic = async (req, res, next) => {
 		})
 			.then(async (_) => {
 				Demographics.findOne({
-					where: { id: id },
+					where: { id },
 				})
 					.then((data) => {
 						res.send(data);

@@ -1,13 +1,15 @@
 FROM node:16
 
-EXPOSE 3000
+EXPOSE 8000
 
 WORKDIR /app
 
-RUN npm i npm@latest -g
+RUN yarn install
 
 COPY package.json yarn.lock ./
 
 RUN yarn install 
 
 COPY . .
+
+CMD ["node", "api/api.js"]

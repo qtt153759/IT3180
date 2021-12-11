@@ -1,22 +1,36 @@
 version: "3.8"
 
 services:
-    app:
-        image: node:16-alphine
-        command: sh -c "yarn install && yarn run dev"
-        ports:
-          - 3000:3000
-        working_dir: /app
-        volumes: 
-            - ./:/app
-    mariadb:
-      image: mariadb
-      env_file: ./.env
-      environment: 
-        MARIADB_ROOT_PASSWORD: $MARIA
+  app:
+    image: node:16
+    depends_on:
+      - mariadb
+    command: sh -c "yarn install && yarn run dev"
+    ports:
+      - 8000:8000
+    working_dir: /app
+    volumes:
+      - ./:/app
 
+    env_file:
+      - ./.env
+    environment:
+      MYSQL_HOST: $DB_HOST
+      MYSQL_USER: $DB_USER
+      MYSQL_PASSWORD: $DB_PASSWORD
+      MYSQL_DB: $DB_NAME
 
+  mariadb:
+    image: mariadb
+    env_file:
+      - ./.env
+    ports:
+      - $DB_PORT:$DOCKET_DB_PORT
+    volumes:
+      - db:/var/lib/mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: $DB_PASSWORD
+      MYSQL_DATABASE: $DB_NAME
 
-
-
-                
+volumes:
+  db: null

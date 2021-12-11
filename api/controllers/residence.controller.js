@@ -1,7 +1,7 @@
 const Residences = require("../models/residence.model");
 const createHttpError = require("http-errors");
 // Created and save a new residence
-exports.create = async (req, res) => {
+let create = async (req, res) => {
 	try {
 		if (!req.body) {
 			res.status(400).send({
@@ -21,7 +21,7 @@ exports.create = async (req, res) => {
 };
 
 // Retrieve all residence record
-exports.getAll = (req, res, next) => {
+let getAll = (req, res, next) => {
 	try {
 		let page = parseInt(req.query.page);
 		let limit = parseInt(req.query.limit);
@@ -49,7 +49,7 @@ exports.getAll = (req, res, next) => {
 	}
 };
 
-exports.update = (req, res) => {
+let update = (req, res) => {
 	if (!req.body)
 		return res.send({
 			message: "empty body",
@@ -72,4 +72,11 @@ exports.update = (req, res) => {
 	});
 };
 
-exports.delete = (req, res) => {};
+let deleteResidence = (req, res) => {};
+
+module.exports = {
+	create,
+	getAll,
+	update,
+	deleteResidence,
+};
