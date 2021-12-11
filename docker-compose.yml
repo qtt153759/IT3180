@@ -25,7 +25,7 @@ services:
     env_file:
       - ./.env
     ports:
-      - $DB_PORT:$DOCKET_DB_PORT
+      - $DB_PORT:$DOCKER_DB_PORT
     volumes:
       - db:/var/lib/mariadb
     environment:
