@@ -35,7 +35,16 @@ let createDemographics = async (req, res, next) => {
 // Retrieve all demographics from the database
 let retrieveAllDemographic = async (req, res, next) => {
 	try {
-		await Demographics.findAll({ where: { isDeleted: false } })
+		const page = parseInt(req.query.page);
+		const limit = parseInt(req.query.limit);
+		if (!page || !limit) {
+			throw createHttpError(500, "Missing required parameter");
+		}
+		await Demographics.findAll({
+			where: { isDeleted: false },
+			limit: limit,
+			offset: (page - 1) * limit,
+		})
 			.then((data) => {
 				res.send({
 					data: data,
