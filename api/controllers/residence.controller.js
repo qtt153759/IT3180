@@ -23,10 +23,13 @@ exports.create = async (req, res) => {
 // Retrieve all residence record
 exports.getAll = (req, res, next) => {
 	try {
-		const page = parseInt(req.query.page);
-		const limit = parseInt(req.query.limit);
-		if (!page || !limit) {
-			throw createHttpError(500, "Missing required parameter");
+		let page = parseInt(req.query.page);
+		let limit = parseInt(req.query.limit);
+		if (Number.isNaN(page)) {
+			page = 1;
+		}
+		if (Number.isNaN(limit)) {
+			limit = 10;
 		}
 		Residences.findAll({
 			where: { isDeleted: false },

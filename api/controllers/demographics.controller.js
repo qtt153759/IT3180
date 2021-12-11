@@ -35,10 +35,13 @@ let createDemographics = async (req, res, next) => {
 // Retrieve all demographics from the database
 let retrieveAllDemographic = async (req, res, next) => {
 	try {
-		const page = parseInt(req.query.page);
-		const limit = parseInt(req.query.limit);
-		if (!page || !limit) {
-			throw createHttpError(500, "Missing required parameter");
+		let page = parseInt(req.query.page);
+		let limit = parseInt(req.query.limit);
+		if (Number.isNaN(page)) {
+			page = 1;
+		}
+		if (Number.isNaN(limit)) {
+			limit = 10;
 		}
 		await Demographics.findAll({
 			where: { isDeleted: false },
