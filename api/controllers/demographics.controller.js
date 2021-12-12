@@ -55,7 +55,22 @@ let retrieveAllDemographic = async (req, res, next) => {
 		next(err);
 	}
 };
-
+let getDemographicsById = async (req, res, next) => {
+	try {
+		const id = req.params.id;
+		console.log(id);
+		let demographicData = await Demographics.findOne({
+			where: { id: id },
+		});
+		if (!demographicData) {
+			throw createHttpError(400, "this id isn't exsit");
+		} else {
+			res.send(createSuccess(demographicData));
+		}
+	} catch (err) {
+		next(err);
+	}
+};
 let updateDemographic = async (req, res, next) => {
 	try {
 		let { id } = req.body;
@@ -127,4 +142,5 @@ module.exports = {
 	retrieveAllDemographic,
 	deleteDemographics,
 	updateDemographic,
+	getDemographicsById,
 };

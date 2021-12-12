@@ -5,18 +5,13 @@ const createSuccess = require("../helpers/respose.success");
 // Created and save a new residence
 let create = async (req, res, next) => {
 	try {
-		let {
-			header_id: headerId,
-			province_id: provinceId,
-			district_id: districtId,
-			ward_id: wardId,
-		} = req.body;
+		let { headerId, provinceId, districtId, wardId } = req.body;
 		if (!(headerId && provinceId && districtId && wardId)) {
 			throw createHttpError(400, "body missing field!");
 		}
 
 		const exist = await Residences.findOne({
-			where: { headerId, isDeleted: false },
+			where: { headerId: headerId, isDeleted: false },
 		});
 		console.log(headerId);
 		if (exist) throw createHttpError(400, "Dupicate header_id");
@@ -50,7 +45,22 @@ let getAll = (req, res, next) => {
 		next(err);
 	}
 };
-
+let getResidenceById = async (req, res, next) => {
+	try {
+		const id = req.params.id;
+		console.log(id);
+		let redidenceData = await Residences.findOne({
+			where: { id: id },
+		});
+		if (!redidenceData) {
+			throw createHttpError(400, "this id isn't exsit");
+		} else {
+			res.send(createSuccess(redidenceData));
+		}
+	} catch (err) {
+		next(err);
+	}
+};
 let update = (req, res) => {
 	if (!req.body)
 		return res.send({
@@ -99,4 +109,5 @@ module.exports = {
 	getAll,
 	update,
 	deleteResidence,
+	getResidenceById,
 };
