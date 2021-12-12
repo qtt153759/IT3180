@@ -22,6 +22,7 @@ sequelize
 	.sync({ alter: true })
 	.then((data, err) => {
 		if (err) console.log("err: " + err);
+		if (data) console.log("data: " + data);
 	})
 	.catch((err) => {
 		console.log(err);

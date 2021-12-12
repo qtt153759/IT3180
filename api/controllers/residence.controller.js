@@ -1,9 +1,7 @@
 const Residences = require("../models/residence.model");
 const createHttpError = require("http-errors");
-const createSuccess = require("../helpers/respose.success");
-
 // Created and save a new residence
-let create = async (req, res, next) => {
+let create = async (req, res) => {
 	try {
 		let { headerId, provinceId, districtId, wardId } = req.body;
 		if (!(headerId && provinceId && districtId && wardId)) {
@@ -36,10 +34,12 @@ let getAll = (req, res, next) => {
 			offset: (page - 1) * limit,
 		})
 			.then((data) => {
-				res.send(createSuccess(data));
+				res.status(200).send({
+					data: data,
+				});
 			})
 			.catch((err) => {
-				next(createHttpError.BadRequest(500, err));
+				throw createHttpError.BadRequest(500, err);
 			});
 	} catch (err) {
 		next(err);
@@ -84,25 +84,7 @@ let update = (req, res) => {
 	});
 };
 
-let deleteResidence = async (req, res, next) => {
-	try {
-		const id = req.params.id;
-
-		const exist = await Residences.findOne({
-			where: { id, isDeleted: false },
-		});
-
-		if (!exist) throw createHttpError(400, "id not found");
-		await Residences.update(
-			{ isDeleted: true },
-			{ where: { id, isDeleted: false } }
-		);
-
-		return res.send(createSuccess());
-	} catch (err) {
-		next(err);
-	}
-};
+let deleteResidence = (req, res) => {};
 
 module.exports = {
 	create,
