@@ -1,7 +1,7 @@
 const express = require("express");
 const addressController = require("../controllers/address.controller");
 
-const route = require("express").Router();
+const route = express.Router();
 
 route.get("/province", addressController.getProvince);
 route.get("/district/:province_id", addressController.getDistrict);

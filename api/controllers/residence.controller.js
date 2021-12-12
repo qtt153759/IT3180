@@ -11,6 +11,7 @@ let create = async (req, res, next) => {
 			district_id: districtId,
 			ward_id: wardId,
 		} = req.body;
+
 		if (!(headerId && provinceId && districtId && wardId)) {
 			throw createHttpError(400, "body missing field!");
 		}
@@ -19,6 +20,7 @@ let create = async (req, res, next) => {
 			where: { headerId, isDeleted: false },
 		});
 		console.log(headerId);
+
 		if (exist) throw createHttpError(400, "Dupicate header_id");
 
 		const data = await Residences.create(req.body);
@@ -44,7 +46,7 @@ let getAll = (req, res, next) => {
 				res.send(createSuccess(data));
 			})
 			.catch((err) => {
-				next(createHttpError.BadRequest(500, err));
+				next(createHttpError(500, err));
 			});
 	} catch (err) {
 		next(err);
@@ -66,7 +68,7 @@ let update = (req, res) => {
 	if (req.body.ward_id) updatedField.wardId = req.body.ward_id;
 	if (req.body.address) updatedField.address = req.body.address;
 
-	Residence.update(updatedField, {
+	Residences.update(updatedField, {
 		where: {
 			id: id,
 			isDeleted: false,
