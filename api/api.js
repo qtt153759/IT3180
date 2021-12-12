@@ -19,7 +19,7 @@ app.use(express.json());
 
 // database
 sequelize
-	.sync({ alter: true })
+	.sync({ alter: true, logging: false })
 	.then((data, err) => {
 		if (err) console.log("err: " + err);
 		if (data) console.log("data: " + data);
