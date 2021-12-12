@@ -1,20 +1,29 @@
 const Residences = require("../models/residence.model");
 const createHttpError = require("http-errors");
+const createSuccess = require("../helpers/respose.success");
+
 // Created and save a new residence
-let create = async (req, res) => {
+let create = async (req, res, next) => {
 	try {
-		if (!req.body) {
-			return res.status(400).send({
-				message: "body cannot be empty!",
-			});
+		let {
+			header_id: headerId,
+			province_id: provinceId,
+			district_id: districtId,
+			ward_id: wardId,
+		} = req.body;
+		if (!(headerId && provinceId && districtId && wardId)) {
+			throw createHttpError(400, "body missing field!");
 		}
-		Residences.create(req.body)
-			.then((data) => {
-				return res.send(data);
-			})
-			.catch((err) => {
-				throw createHttpError(500, err);
-			});
+
+		const exist = await Residences.findOne({
+			where: { headerId, isDeleted: false },
+		});
+		console.log(headerId);
+		if (exist) throw createHttpError(400, "Dupicate header_id");
+
+		const data = await Residences.create(req.body);
+
+		return res.send(createSuccess(data));
 	} catch (err) {
 		next(err);
 	}
@@ -32,12 +41,10 @@ let getAll = (req, res, next) => {
 			offset: (page - 1) * limit,
 		})
 			.then((data) => {
-				res.status(200).send({
-					data: data,
-				});
+				res.send(createSuccess(data));
 			})
 			.catch((err) => {
-				throw createHttpError.BadRequest(500, err);
+				next(createHttpError.BadRequest(500, err));
 			});
 	} catch (err) {
 		next(err);
@@ -67,7 +74,25 @@ let update = (req, res) => {
 	});
 };
 
-let deleteResidence = (req, res) => {};
+let deleteResidence = async (req, res, next) => {
+	try {
+		const id = req.params.id;
+
+		const exist = await Residences.findOne({
+			where: { id, isDeleted: false },
+		});
+
+		if (!exist) throw createHttpError(400, "id not found");
+		await Residences.update(
+			{ isDeleted: true },
+			{ where: { id, isDeleted: false } }
+		);
+
+		return res.send(createSuccess());
+	} catch (err) {
+		next(err);
+	}
+};
 
 module.exports = {
 	create,

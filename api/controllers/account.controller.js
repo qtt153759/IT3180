@@ -8,7 +8,6 @@ let handleLogin = async (req, res, next) => {
 		if (error) throw createError(500, error.details[0].message);
 
 		let userData = await accountService.handleUserLogin(req.body); //tao file accountservice rieng cho gon
-		console.log(userData);
 		return res.status(200).json({
 			message: userData.errMessage,
 			user: userData.user ? userData.user : {},
@@ -24,7 +23,6 @@ let createAccount = async (req, res, next) => {
 		if (error) throw createError(500, error.details[0].message);
 
 		let userData = await accountService.createUserAccount(req.body); //tao file accountservice rieng cho gon
-		console.log(userData);
 		return res.status(200).json({
 			message: userData.errMessage,
 			user: userData.user ? userData.user : {},

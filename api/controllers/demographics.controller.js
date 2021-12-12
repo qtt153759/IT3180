@@ -19,7 +19,7 @@ let createDemographics = async (req, res, next) => {
 		});
 
 		if (exist) {
-			throw createHttpError(500, "first name exist");
+			throw createHttpError(400, "first name exist");
 		}
 
 		Demographics.create(req.body)
@@ -93,6 +93,12 @@ let updateDemographic = async (req, res, next) => {
 let deleteDemographics = async (req, res, next) => {
 	try {
 		const id = req.params.id;
+		const exist = await Demographics.findOne({
+			where: { id, isDeleted: false },
+		});
+
+		if (!exist) throw createHttpError(400, "id not found");
+
 		Demographics.update(
 			{
 				isDeleted: true,
