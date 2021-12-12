@@ -1,15 +1,10 @@
 const Residences = require("../models/residence.model");
 const createHttpError = require("http-errors");
+const createSuccess = require("../helpers/respose.success");
 // Created and save a new residence
-let create = async (req, res) => {
+let create = async (req, res, next) => {
 	try {
-		let {
-			header_id: headerId,
-			province_id: provinceId,
-			district_id: districtId,
-			ward_id: wardId,
-		} = req.body;
-
+		let { headerId, provinceId, districtId, wardId } = req.body;
 		if (!(headerId && provinceId && districtId && wardId)) {
 			throw createHttpError(400, "body missing field!");
 		}
@@ -18,7 +13,6 @@ let create = async (req, res) => {
 			where: { headerId: headerId, isDeleted: false },
 		});
 		console.log(headerId);
-
 		if (exist) throw createHttpError(400, "Dupicate header_id");
 
 		const data = await Residences.create(req.body);
@@ -41,9 +35,7 @@ let getAll = (req, res, next) => {
 			offset: (page - 1) * limit,
 		})
 			.then((data) => {
-				res.status(200).send({
-					data: data,
-				});
+				res.send(createSuccess(data));
 			})
 			.catch((err) => {
 				next(createHttpError(500, err));
