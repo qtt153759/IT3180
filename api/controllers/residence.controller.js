@@ -4,13 +4,13 @@ const createHttpError = require("http-errors");
 let create = async (req, res) => {
 	try {
 		if (!req.body) {
-			res.status(400).send({
+			return res.status(400).send({
 				message: "body cannot be empty!",
 			});
 		}
 		Residences.create(req.body)
 			.then((data) => {
-				res.send(data);
+				return res.send(data);
 			})
 			.catch((err) => {
 				throw createHttpError(500, err);
@@ -23,14 +23,9 @@ let create = async (req, res) => {
 // Retrieve all residence record
 let getAll = (req, res, next) => {
 	try {
-		let page = parseInt(req.query.page);
-		let limit = parseInt(req.query.limit);
-		if (Number.isNaN(page)) {
-			page = 1;
-		}
-		if (Number.isNaN(limit)) {
-			limit = 10;
-		}
+		let page = parseInt(req.query.page) || 1;
+		let limit = parseInt(req.query.limit) || 10;
+
 		Residences.findAll({
 			where: { isDeleted: false },
 			limit: limit,

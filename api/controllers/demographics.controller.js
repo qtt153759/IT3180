@@ -1,17 +1,19 @@
 const Demographics = require("../models/demographics.model");
 const createHttpError = require("http-errors");
 const { demographicsValidator } = require("../helpers/validator");
+const createSuccess = require("../helpers/respose.success");
 
 // Created and save a new demographics
 let createDemographics = async (req, res, next) => {
 	try {
 		const { error } = demographicsValidator(req.body);
-		if (error) throw createHttpError(500, error);
-		let { firstname } = req.body; //destructuring
+		if (error) throw createHttpError(500, error.details[0].message);
+		let { firstname, lastname } = req.body;
 
 		const exist = await Demographics.findOne({
 			where: {
 				firstname,
+				lastname,
 				isDeleted: false,
 			},
 		});
@@ -22,10 +24,10 @@ let createDemographics = async (req, res, next) => {
 
 		Demographics.create(req.body)
 			.then((data) => {
-				res.send(data);
+				return res.send(createSuccess(data));
 			})
 			.catch((err) => {
-				throw createHttpError(500, err);
+				next(createHttpError(500, err));
 			});
 	} catch (err) {
 		next(err);
@@ -35,26 +37,19 @@ let createDemographics = async (req, res, next) => {
 // Retrieve all demographics from the database
 let retrieveAllDemographic = async (req, res, next) => {
 	try {
-		let page = parseInt(req.query.page);
-		let limit = parseInt(req.query.limit);
-		if (Number.isNaN(page)) {
-			page = 1;
-		}
-		if (Number.isNaN(limit)) {
-			limit = 10;
-		}
+		let page = parseInt(req.query.page) || 1;
+		let limit = parseInt(req.query.limit) || 10;
+
 		await Demographics.findAll({
 			where: { isDeleted: false },
 			limit: limit,
 			offset: (page - 1) * limit,
 		})
 			.then((data) => {
-				res.send({
-					data,
-				});
+				res.send(createSuccess(data));
 			})
 			.catch((err) => {
-				throw createHttpError(500, err);
+				next(createHttpError(500, err));
 			});
 	} catch (err) {
 		next(err);
@@ -65,7 +60,7 @@ let updateDemographic = async (req, res, next) => {
 	try {
 		let { id } = req.body;
 		if (!id) {
-			throw createHttpError(500, "empty id ");
+			throw createHttpError(400, "Missing 'id' field");
 		}
 		const { error } = demographicsValidator(req.body);
 		if (error) throw createHttpError(500, error);
@@ -81,14 +76,14 @@ let updateDemographic = async (req, res, next) => {
 					where: { id },
 				})
 					.then((data) => {
-						res.send(data);
+						return res.send(createSuccess(data));
 					})
 					.catch((err) => {
 						throw createHttpError(500, err);
 					});
 			})
 			.catch((err) => {
-				throw createHttpError(500, err);
+				next(createHttpError(500, err));
 			});
 	} catch (err) {
 		next(err);
@@ -98,21 +93,24 @@ let updateDemographic = async (req, res, next) => {
 let deleteDemographics = async (req, res, next) => {
 	try {
 		const id = req.params.id;
-		console.log(req.params.id);
-		Demographics.update({
-			where: {
-				id: id,
+		Demographics.update(
+			{
 				isDeleted: true,
 			},
-		})
+			{
+				where: {
+					id,
+					isDeleted: false,
+				},
+				returning: true,
+				plain: true,
+			}
+		)
 			.then((data) => {
-				return res.send({
-					message: "success",
-					data: data,
-				});
+				return res.send(createSuccess());
 			})
 			.catch((err) => {
-				throw createHttpError(500, err);
+				throw err;
 			});
 	} catch (err) {
 		next(err);
