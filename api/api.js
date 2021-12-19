@@ -1,12 +1,12 @@
 // configure environment variable
 require("dotenv").config();
 const sequelize = require("./models/index");
-
+const cors = require("cors");
 const express = require("express");
 const app = express();
 const createError = require("http-errors");
 
-//app.use(cors({origin:true}));//tranh loi cors server ten mien// khong co tac dung localhost
+app.use(cors({ origin: ["http://localhost:3000"] }));
 app.use(function (req, res, next) {
 	// Website you wish to allow to connect
 	res.setHeader("Access-Control-Allow-Origin", process.env.URL_REACT); //cho phep cong 3000 cua ben react
