@@ -65,6 +65,9 @@ const Demographics = sequelize.define(
 			allowNull: false,
 			type: DataTypes.INTEGER,
 		},
+		domicile: {
+			type: DataTypes.STRING,
+		},
 		createdAt: {
 			allowNull: false,
 			type: DataTypes.DATE,
