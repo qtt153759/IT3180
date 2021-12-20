@@ -46,7 +46,7 @@ let retrieveAllDemographic = async (req, res, next) => {
 			offset: (page - 1) * limit,
 		})
 			.then((data) => {
-				res.send(createSuccess(data, data.length));
+				res.send(createSuccess(data, data.length, page, limit));
 			})
 			.catch((err) => {
 				next(createHttpError(500, err));
