@@ -36,7 +36,7 @@ let getAll = (req, res, next) => {
 			offset: (page - 1) * limit,
 		})
 			.then((data) => {
-				res.send(createSuccess(data));
+				res.send(createSuccess(data, data.length));
 			})
 			.catch((err) => {
 				next(createHttpError(500, err));
