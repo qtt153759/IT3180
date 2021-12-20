@@ -6,12 +6,13 @@ const Nation = sequelize.define("nation", {
 	id: {
 		type: DataTypes.INTEGER,
 		allowNull: false,
+		primaryKey: true,
 	},
 	name: {
 		type: DataTypes.STRING,
 		allowNull: false,
 	},
-	test: {
+	additionalName: {
 		type: DataTypes.STRING,
 	},
 });

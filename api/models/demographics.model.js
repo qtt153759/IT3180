@@ -10,10 +10,6 @@ const Demographics = sequelize.define(
 			autoIncrement: true,
 			primaryKey: true,
 		},
-		residenceId: {
-			type: DataTypes.INTEGER(11),
-			allowNull: false,
-		},
 		firstname: {
 			type: DataTypes.STRING(255),
 			allowNull: false,
@@ -93,15 +89,9 @@ const Demographics = sequelize.define(
 );
 
 Demographics.associate = (models) => {
-	Demographics.belongsTo(models.Residences);
+	Demographics.hasOne(models.Account);
 
-	Demographics.belongsTo(models.Account, {
-		foreignKey: "id",
-	});
-
-	Demographics.hasOne(models.Nation, {
-		foreignKey: "id",
-	});
+	Demographics.hasOne(models.Nation);
 };
 
 module.exports = Demographics;

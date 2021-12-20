@@ -9,4 +9,7 @@ route.get("/:id", residenceController.getResidenceById);
 route.put("/update", residenceController.update);
 route.delete("/delete", residenceController.deleteResidence);
 
+// Lấy danh sách nhân khẩu trong hộ khẩu
+route.get("/:id/demographics", residenceController.getDemographicsInResidence);
+
 module.exports = route;
