@@ -1,10 +1,92 @@
 {
-  "data": [
-    {
-      "id": 1,
-      "name": "Kinh",
-      "alias": ["Kinh"]
+	"data": [
+		{
+			"id": 1,
+			"name": "Kinh",
+			"alias": ["Kinh"]
+		},
+		{
+			"id": 2,
+			"name": "Tày",
+			"alias": ["Thổ", "Ngạn", "Phén", "Thù Lao", "Pa Dí"]
+		},
+		{
+			"id": 3,
+			"name": "Thái",
+			"alias": [
+				"Tày Khao* hoặc Đón (Thái Trắng*)",
+				"Tày Đăm* (Thái Đen*)",
+				"Tày Mười",
+				"Tày Thanh (Mán Thanh)",
+				"Hàng Tổng (Tày Mường)",
+				"Pa Thay",
+				"Thổ Đà Bắc",
+				"Tày Dọ**",
+				"Tay**"
+			]
+		},
+		{
+			"id": 4,
+			"name": "Hoa",
+			"alias": [
+				"Triều Châu",
+				"Phúc Kiến",
+				"Quảng Đông",
+				"Quảng Tây**",
+				"Hải Nam",
+				"Hạ*",
+				"Xạ Phạng*",
+				"Xìa Phống**",
+				"Thảng Nhằm**",
+				"Minh Hương**",
+				"Hẹ**",
+				"Sang Phang**"
+			]
+		},
 
-    }
-  ]
+		{
+			"id": 5,
+			"name": "Khmer",
+			"alias": [
+				"Cul",
+				"Cur",
+				"Cu",
+				"Thổ",
+				"Việt gốc Miên",
+				"Khơ Me",
+				"Krôm"
+			]
+		},
+		{
+			"id": 6,
+			"name": "Mường",
+			"alias": [
+				[
+					"Mol (Mual Mon** Moan**)",
+					"Mọi* (1)",
+					"Mọi bi",
+					"Ao Tá (Ậu Tá)"
+				]
+			]
+		},
+		{
+			"id": 7,
+			"name": "Nùng ",
+			"alias": [
+				[
+					"Nùng Xuồng",
+					"Nùng Giang",
+					"Nùng An",
+					"Nùng Inh**",
+					"Nùng Phàn Slinh",
+					"Nùng Cháo",
+					"Nùng Lòi",
+					"Nùng Quy Rin",
+					"Nùng Dín**",
+					"Khèn Lài",
+					"Nồng**…"
+				]
+			]
+		}
+	]
 }
