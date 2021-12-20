@@ -88,7 +88,7 @@ let updateDemographic = async (req, res, next) => {
 				isDeleted: false,
 			},
 		})
-			.then(async (_) => {
+			.then(async () => {
 				Demographics.findOne({
 					where: { id },
 				})
