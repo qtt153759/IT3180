@@ -19,7 +19,7 @@ let createDemographics = async (req, res, next) => {
 		});
 
 		if (exist) {
-			throw createHttpError(400, "first name exist");
+			throw createHttpError(500, "first name exist");
 		}
 
 		Demographics.create(req.body)
@@ -46,7 +46,7 @@ let retrieveAllDemographic = async (req, res, next) => {
 			offset: (page - 1) * limit,
 		})
 			.then((data) => {
-				res.send(createSuccess(data));
+				res.send(createSuccess(data, data.length, page, limit));
 			})
 			.catch((err) => {
 				next(createHttpError(500, err));
@@ -71,7 +71,6 @@ let getDemographicsById = async (req, res, next) => {
 		next(err);
 	}
 };
-
 let updateDemographic = async (req, res, next) => {
 	try {
 		let { id } = req.body;
@@ -87,7 +86,7 @@ let updateDemographic = async (req, res, next) => {
 				isDeleted: false,
 			},
 		})
-			.then(async (_) => {
+			.then(async () => {
 				Demographics.findOne({
 					where: { id },
 				})
@@ -109,12 +108,6 @@ let updateDemographic = async (req, res, next) => {
 let deleteDemographics = async (req, res, next) => {
 	try {
 		const id = req.params.id;
-		const exist = await Demographics.findOne({
-			where: { id, isDeleted: false },
-		});
-
-		if (!exist) throw createHttpError(400, "id not found");
-
 		Demographics.update(
 			{
 				isDeleted: true,

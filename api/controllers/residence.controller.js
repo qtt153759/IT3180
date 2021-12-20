@@ -1,7 +1,6 @@
 const Residences = require("../models/residence.model");
 const createHttpError = require("http-errors");
 const createSuccess = require("../helpers/respose.success");
-
 // Created and save a new residence
 let create = async (req, res, next) => {
 	try {
@@ -36,7 +35,7 @@ let getAll = (req, res, next) => {
 			offset: (page - 1) * limit,
 		})
 			.then((data) => {
-				res.send(createSuccess(data));
+				res.send(createSuccess(data, data.length, page, limit));
 			})
 			.catch((err) => {
 				next(createHttpError(500, err));
@@ -48,7 +47,6 @@ let getAll = (req, res, next) => {
 let getResidenceById = async (req, res, next) => {
 	try {
 		const id = req.params.id;
-		console.log(id);
 		let redidenceData = await Residences.findOne({
 			where: { id: id },
 		});
@@ -84,25 +82,7 @@ let update = (req, res) => {
 	});
 };
 
-let deleteResidence = async (req, res, next) => {
-	try {
-		const id = req.params.id;
-
-		const exist = await Residences.findOne({
-			where: { id, isDeleted: false },
-		});
-
-		if (!exist) throw createHttpError(400, "id not found");
-		await Residences.update(
-			{ isDeleted: true },
-			{ where: { id, isDeleted: false } }
-		);
-
-		return res.send(createSuccess());
-	} catch (err) {
-		next(err);
-	}
-};
+let deleteResidence = (req, res) => {};
 
 module.exports = {
 	create,
