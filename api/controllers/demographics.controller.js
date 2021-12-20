@@ -2,7 +2,8 @@ const Demographics = require("../models/demographics.model");
 const createHttpError = require("http-errors");
 const { demographicsValidator } = require("../helpers/validator");
 const createSuccess = require("../helpers/respose.success");
-
+const { Op } = require("sequelize");
+const demographicsService = require("../services/demographics.service");
 // Created and save a new demographics
 let createDemographics = async (req, res, next) => {
 	try {
@@ -39,9 +40,32 @@ let retrieveAllDemographic = async (req, res, next) => {
 	try {
 		let page = parseInt(req.query.page) || 1;
 		let limit = parseInt(req.query.limit) || 10;
-
+		let rangeAge = demographicsService.checkAge(req.query.age);
+		// let condition={}
+		// if(req.query.gender){
+		// 	condition.name=req.query.gender;
+		// }
+		console.log("Check range", rangeAge);
 		await Demographics.findAll({
-			where: { isDeleted: false },
+			where: {
+				isDeleted: false,
+				birthday: {
+					[Op.lt]: new Date(
+						new Date() -
+							24 * 60 * 60 * 1000 * 365 * (await rangeAge).upper
+					),
+					[Op.gt]: new Date(
+						new Date() -
+							24 * 60 * 60 * 1000 * 365 * (await rangeAge).lower
+					),
+				},
+				// include: [
+				//     {
+				//         model: db.gender,
+				//         attributes: ["name"],
+				// 		   where:condition
+				//     }
+			},
 			limit: limit,
 			offset: (page - 1) * limit,
 		})
