@@ -35,7 +35,7 @@ let getAll = (req, res, next) => {
 			offset: (page - 1) * limit,
 		})
 			.then((data) => {
-				res.send(createSuccess(data));
+				res.send(createSuccess(data, data.length, page, limit));
 			})
 			.catch((err) => {
 				next(createHttpError(500, err));
@@ -47,7 +47,6 @@ let getAll = (req, res, next) => {
 let getResidenceById = async (req, res, next) => {
 	try {
 		const id = req.params.id;
-		console.log(id);
 		let redidenceData = await Residences.findOne({
 			where: { id: id },
 		});

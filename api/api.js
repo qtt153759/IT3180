@@ -1,7 +1,7 @@
 // configure environment variable
 require("dotenv").config();
 const sequelize = require("./models/index");
-
+const cors = require("cors");
 const express = require("express");
 const app = express();
 const createError = require("http-errors");
@@ -16,6 +16,8 @@ app.use(express.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(express.json());
+
+app.use(cors());
 
 // database
 sequelize
@@ -37,7 +39,7 @@ app.use((req, res, next) => {
 	next(createError(404, "Not Found"));
 });
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
 	return res.json({
 		status: err.status || 500,
 		message: err.message,
