@@ -6,7 +6,6 @@ const express = require("express");
 const app = express();
 const createError = require("http-errors");
 
-app.use(cors({ origin: ["http://localhost:3000"] }));
 const ResidenceRoute = require("./routes/residence.route");
 const DemographicsRoute = require("./routes/demographics.route");
 const AddressRoute = require("./routes/address.route");
@@ -17,6 +16,8 @@ app.use(express.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(express.json());
+
+app.use(cors());
 
 // database
 sequelize
