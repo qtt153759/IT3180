@@ -38,7 +38,7 @@ app.use((req, res, next) => {
 	next(createError(404, "Not Found"));
 });
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
 	return res.json({
 		status: err.status || 500,
 		message: err.message,
