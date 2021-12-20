@@ -13,7 +13,6 @@ const Account = sequelize.define(
 		demographic_id: {
 			type: DataTypes.STRING(255),
 			allowNull: false,
-			// field:
 		},
 		role: {
 			type: DataTypes.INTEGER,
@@ -35,9 +34,5 @@ const Account = sequelize.define(
 		updatedAt: true,
 	}
 );
-
-Account.associate = (models) => {
-	Account.belongsTo(models.User, { foreignKey: "id", as: "demographicData" });
-};
 
 module.exports = Account;

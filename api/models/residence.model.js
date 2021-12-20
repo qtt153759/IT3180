@@ -47,8 +47,6 @@ const Residences = sequelize.define(
 	}
 );
 
-Residences.hasMany(Demographics, {
-	foreignKey: "residenceId",
-});
+Residences.hasMany(Demographics);
 
 module.exports = Residences;

@@ -1,4 +1,5 @@
 const Residences = require("../models/residence.model");
+const Demographics = require("../models/demographics.model");
 const createHttpError = require("http-errors");
 const createSuccess = require("../helpers/respose.success");
 // Created and save a new residence
@@ -84,10 +85,27 @@ let update = (req, res) => {
 
 let deleteResidence = (req, res) => {};
 
+let getDemographicsInResidence = async (req, res, next) => {
+	try {
+		const id = req.params.id;
+
+		const demographics = await Demographics.findAndCountAll({
+			where: {
+				residenceId: id,
+			},
+		});
+
+		return res.send(createSuccess(demographics.rows, demographics.count));
+	} catch (err) {
+		next(err);
+	}
+};
+
 module.exports = {
 	create,
 	getAll,
 	update,
 	deleteResidence,
 	getResidenceById,
+	getDemographicsInResidence,
 };
