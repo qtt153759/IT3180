@@ -1,4 +1,5 @@
 const Demographics = require("../models/demographics.model");
+// const Gender = require("../models/gender.model.js");
 const createHttpError = require("http-errors");
 const { demographicsValidator } = require("../helpers/validator");
 const createSuccess = require("../helpers/respose.success");
@@ -40,35 +41,57 @@ let retrieveAllDemographic = async (req, res, next) => {
 	try {
 		let page = parseInt(req.query.page) || 1;
 		let limit = parseInt(req.query.limit) || 10;
-		let rangeAge = demographicsService.checkAge(req.query.age);
-		// let condition={}
-		// if(req.query.gender){
-		// 	condition.name=req.query.gender;
+		let condition = {};
+		let include = [];
+		let order = [];
+		let where={}
+		where.isDeleted = false;
+		condition.limit = limit;
+		condition.offset = (page - 1) * limit;
+		//create include giữa 2 model associate(chưa có model Gender)
+		// if (req.query.gender) {
+		// 	let item = {
+		// 		model: Gender,
+		// 		attributes: ["name"],
+		// 		where: {
+		// 			name: req.query.gender,
+		// 		},
+		// 	};
+		// 	console.log("item");
+		// 	include.push(item);
 		// }
-		console.log("Check range", rangeAge);
-		await Demographics.findAll({
-			where: {
-				isDeleted: false,
-				birthday: {
-					[Op.lt]: new Date(
+		//create where clause
+		if (req.query.age) {
+			let rangeAge = demographicsService.checkAge(req.query.age);
+			where.birthday = {
+				[Op.between]: [
+					new Date(
 						new Date() -
 							24 * 60 * 60 * 1000 * 365 * (await rangeAge).upper
 					),
-					[Op.gt]: new Date(
+					new Date(
 						new Date() -
 							24 * 60 * 60 * 1000 * 365 * (await rangeAge).lower
 					),
-				},
-				// include: [
-				//     {
-				//         model: db.gender,
-				//         attributes: ["name"],
-				// 		   where:condition
-				//     }
-			},
-			limit: limit,
-			offset: (page - 1) * limit,
-		})
+				],
+			};
+			console.log("Check range", rangeAge);
+		}
+		//order by
+		if (req.query.orderColumn) {
+			let orderDirection = req.query.orderDirection || "DESC";
+			order = [req.query.orderColumn, orderDirection];
+		}
+		//push every thing in condition
+		if (include && include.length > 0) {
+			condition.include = include;
+		}
+		if (order && order.length > 0) {
+			condition.order = [order];
+		}
+		condition.where=where
+		console.log("codition", condition);
+		await Demographics.findAll(condition)
 			.then((data) => {
 				res.send(createSuccess(data, data.length, page, limit));
 			})
