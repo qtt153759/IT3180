@@ -1,10 +1,75 @@
 const createHttpError = require("http-errors");
 const createSuccess = require("../helpers/respose.success");
-const Fee2Residence = require("../models/Fee2Residence.model");
-let getFee2Residence = async (req, res, next) => {
+// const Fee2Residence = require("../models/Fee2Residence.model");
+const db = require("../models/index");
+const Fee2Residence = db.fee2Residence;
+const Fee = db.fee;
+let getAllFee2Residence = async (req, res, next) => {
 	try {
 		console.log("vao controller");
-		await Fee2Residence.findAll()
+		await Fee2Residence.findAll({
+			include: [
+				{
+					model: Fee,
+					attributes: ["name", "description"],
+					required: true,
+				},
+			],
+		})
+			.then((data) => {
+				res.send(createSuccess(data));
+			})
+			.catch((err) => {
+				next(createHttpError(500, err));
+			});
+	} catch (err) {
+		next(err);
+	}
+};
+let getFee2ResidenceByResidence = async (req, res, next) => {
+	try {
+		console.log("vao controller");
+		if (!req.params.id) {
+			throw createHttpError(400, "params missing residenc_id!");
+		}
+		let id = req.params.id;
+		await Fee2Residence.findAll({
+			where: { residence_id: id },
+			include: [
+				{
+					model: Fee,
+					attributes: ["name", "description"],
+					required: true,
+				},
+			],
+		})
+			.then((data) => {
+				res.send(createSuccess(data));
+			})
+			.catch((err) => {
+				next(createHttpError(500, err));
+			});
+	} catch (err) {
+		next(err);
+	}
+};
+let getFee2ResidenceByFee = async (req, res, next) => {
+	try {
+		console.log("vao controller");
+		if (!req.params.id) {
+			throw createHttpError(400, "params missing residenc_id!");
+		}
+		let id = req.params.id;
+		await Fee2Residence.findAll({
+			where: { fee_id: id },
+			include: [
+				{
+					model: Fee,
+					attributes: ["name", "description"],
+					required: true,
+				},
+			],
+		})
 			.then((data) => {
 				res.send(createSuccess(data));
 			})
@@ -50,7 +115,7 @@ let updateFee2Residence = async (req, res, next) => {
 	try {
 		if (
 			!req.body ||
-            !req.body.id||
+			!req.body.id ||
 			!req.body.fee_id ||
 			!req.body.residence_id ||
 			!req.body.money
@@ -120,8 +185,10 @@ let deleteFee2Residence = async (req, res, next) => {
 	}
 };
 module.exports = {
-	getFee2Residence,
+	getFee2ResidenceByResidence,
+	getAllFee2Residence,
 	createFee2Residence,
 	updateFee2Residence,
 	deleteFee2Residence,
+	getFee2ResidenceByFee,
 };

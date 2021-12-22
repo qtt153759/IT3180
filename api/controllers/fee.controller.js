@@ -1,6 +1,7 @@
 const createHttpError = require("http-errors");
 const createSuccess = require("../helpers/respose.success");
-const Fee = require("../models/fee.model");
+const db = require("../models/index");
+const Fee=db.fee
 let getFee = async (req, res, next) => {
 	try {
 		console.log("vao controller");

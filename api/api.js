@@ -1,6 +1,6 @@
 // configure environment variable
 require("dotenv").config();
-const sequelize = require("./models/index");
+const db = require("./models/index");
 const cors = require("cors");
 const express = require("express");
 const app = express();
@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(cors());
 
 // database
-sequelize
+db.sequelize
 	.sync({ alter: true, logging: false })
 	.then((data, err) => {
 		if (err) console.log("err: " + err);

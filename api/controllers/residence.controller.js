@@ -1,5 +1,6 @@
-const Residences = require("../models/residence.model");
-const Demographics = require("../models/demographics.model");
+const db = require("../models/index");
+const Residences = db.residence;
+const Demographics = db.demographic;
 const createHttpError = require("http-errors");
 const createSuccess = require("../helpers/respose.success");
 // Created and save a new residence
