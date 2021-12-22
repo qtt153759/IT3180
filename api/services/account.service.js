@@ -1,5 +1,4 @@
-const db = require("../models/index");
-const Account = db.account;
+const Account = require("../models/account.model");
 const bcrypt = require("bcryptjs");
 const createError = require("http-errors");
 const salt = bcrypt.genSaltSync(10);
