@@ -13,6 +13,7 @@ const AccountRoute = require("./routes/account.route");
 const FeeRoute = require("./routes/fee.route");
 const Fee2ResidenceRoute = require("./routes/fee2Residence.route");
 const NationRoute = require("./routes/nation.route");
+const AbsentStayRoute = require("./routes/absentStay.route");
 
 // parse application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: false }));
@@ -39,7 +40,7 @@ app.use("/api/account", AccountRoute);
 app.use("/api/fee", FeeRoute);
 app.use("/api/fee2Residence", Fee2ResidenceRoute);
 app.use("/api/nation", NationRoute);
-
+app.use("/api/absentStay", AbsentStayRoute);
 app.use((req, res, next) => {
 	next(createError(404, "Not Found"));
 });
