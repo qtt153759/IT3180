@@ -1,6 +1,5 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("./index");
-const Demographics = require("./demographics.model");
 
 const Residences = sequelize.define(
 	"residences",
@@ -46,7 +45,5 @@ const Residences = sequelize.define(
 		updatedAt: "updatedAt",
 	}
 );
-
-Residences.hasMany(Demographics);
 
 module.exports = Residences;

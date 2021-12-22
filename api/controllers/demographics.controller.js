@@ -1,3 +1,4 @@
+
 const Demographics = require("../models/demographics.model");
 // const Gender = require("../models/gender.model.js");
 const createHttpError = require("http-errors");
@@ -5,6 +6,11 @@ const { demographicsValidator } = require("../helpers/validator");
 const createSuccess = require("../helpers/respose.success");
 const { Op } = require("sequelize");
 const demographicsService = require("../services/demographics.service");
+const createHttpError = require("http-errors");
+const { demographicsValidator } = require("../helpers/validator");
+const createSuccess = require("../helpers/respose.success");
+const Demographics = require("../models/demographics.model");
+
 // Created and save a new demographics
 let createDemographics = async (req, res, next) => {
 	try {
@@ -41,6 +47,7 @@ let retrieveAllDemographic = async (req, res, next) => {
 	try {
 		let page = parseInt(req.query.page) || 1;
 		let limit = parseInt(req.query.limit) || 10;
+
 		let condition = {};
 		let include = [];
 		let order = [];
@@ -91,9 +98,13 @@ let retrieveAllDemographic = async (req, res, next) => {
 		}
 		condition.where=where
 		console.log("codition", condition);
-		await Demographics.findAll(condition)
+		await Demographics.findAndCountAll({
+			where: { isDeleted: false },
+			limit: limit,
+			offset: (page - 1) * limit,
+		})
 			.then((data) => {
-				res.send(createSuccess(data, data.length, page, limit));
+				res.send(createSuccess(data.rows, data.count, page, limit));
 			})
 			.catch((err) => {
 				next(createHttpError(500, err));
@@ -168,7 +179,7 @@ let deleteDemographics = async (req, res, next) => {
 				plain: true,
 			}
 		)
-			.then((data) => {
+			.then(() => {
 				return res.send(createSuccess());
 			})
 			.catch((err) => {

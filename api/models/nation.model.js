@@ -1,5 +1,4 @@
 const { DataTypes } = require("sequelize");
-const Demographics = require("./demographics.model");
 const sequelize = require("./index");
 
 const Nation = sequelize.define("nation", {
@@ -17,6 +16,6 @@ const Nation = sequelize.define("nation", {
 	},
 });
 
-Nation.belongsTo(Demographics);
+// Nation.associations();
 
 module.exports = Nation;
