@@ -57,7 +57,7 @@ const Demographics = sequelize.define(
 			type: DataTypes.STRING,
 		},
 		relationshipWithHeader: {
-			type: DataTypes.STRING,
+			type: DataTypes.INT,
 		},
 		role: {
 			type: DataTypes.STRING,
