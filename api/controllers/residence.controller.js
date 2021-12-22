@@ -96,7 +96,13 @@ let getDemographicsInResidence = async (req, res, next) => {
 			where: { residenceId: id },
 		});
 
-		return res.send(createSuccess(demographics));
+		const residence = await Residences.findOne({
+			where: { id },
+		});
+
+		residence.setDataValue("demographics", demographics);
+
+		return createSuccess(residence);
 	} catch (err) {
 		next(err);
 	}
