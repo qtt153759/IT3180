@@ -8,4 +8,6 @@ route.post("/", demographicsController.createDemographics);
 route.put("/update", demographicsController.updateDemographic);
 route.delete("/delete/:id", demographicsController.deleteDemographics);
 
+route.get("/nation");
+
 module.exports = route;

@@ -1,9 +1,9 @@
 const { DataTypes } = require("sequelize");
-const Demographics = require("./demographics.model");
+
 const sequelize = require("./index");
 
-const Residences = sequelize.define(
-	"residences",
+const Fee2Residence = sequelize.define(
+	"Fee2Residence",
 	{
 		id: {
 			type: DataTypes.INTEGER,
@@ -11,28 +11,25 @@ const Residences = sequelize.define(
 			autoIncrement: true,
 			primaryKey: true,
 		},
-		headerId: {
+		fee_id: {
 			type: DataTypes.INTEGER,
+			allowNull: false,
 		},
-		provinceId: {
+		residence_id: {
 			type: DataTypes.INTEGER,
+			allowNull: false,
 		},
-		districtId: {
+		money: {
 			type: DataTypes.INTEGER,
-		},
-		wardId: {
-			type: DataTypes.INTEGER,
-		},
-		address: {
-			type: DataTypes.STRING,
+			allowNull: false,
 		},
 		createdAt: {
-			type: DataTypes.DATE,
 			allowNull: false,
+			type: DataTypes.DATE,
 		},
 		updatedAt: {
-			type: DataTypes.DATE,
 			allowNull: false,
+			type: DataTypes.DATE,
 		},
 		isDeleted: {
 			type: DataTypes.BOOLEAN,
@@ -46,7 +43,8 @@ const Residences = sequelize.define(
 		updatedAt: "updatedAt",
 	}
 );
+Fee2Residence.associate = (models) => {
+	Fee2Residence.hasOne(models.Fee);
+};
 
-Residences.hasMany(Demographics, { foreignKey: "residenceId" });
-
-module.exports = Residences;
+module.exports = Fee2Residence;

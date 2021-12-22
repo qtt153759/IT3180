@@ -3,8 +3,10 @@ const createHttpError = require("http-errors");
 const { demographicsValidator } = require("../helpers/validator");
 const createSuccess = require("../helpers/respose.success");
 const { Op } = require("sequelize");
+
 const demographicsService = require("../services/demographic.service");
 const Demographics = require("../models/demographics.model");
+
 // Created and save a new demographics
 let createDemographics = async (req, res, next) => {
     try {
@@ -118,17 +120,18 @@ let retrieveAllDemographic = async (req, res, next) => {
         condition.where = where;
         // console.log("where", where);
         // console.log("codition", condition);
-        await Demographics.findAll(condition)
-            .then((data) => {
-                res.send(createSuccess(data, data.length, page, limit));
-            })
-            .catch((err) => {
-                next(createHttpError(500, err));
-            });
+       await Demographics.findAndCountAll(condition)
+			.then((data) => {
+				res.send(createSuccess(data.rows, data.count, page, limit));
+			})
+			.catch((err) => {
+				next(createHttpError(500, err));
+			});
     } catch (err) {
         next(err);
     }
 };
+
 let getDemographicsById = async (req, res, next) => {
     try {
         const id = req.params.id;

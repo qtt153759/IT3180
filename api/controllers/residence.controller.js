@@ -1,7 +1,8 @@
-const Residences = require("../models/residence.model");
-const Demographics = require("../models/demographics.model");
 const createHttpError = require("http-errors");
 const createSuccess = require("../helpers/respose.success");
+const Residences = require("../models/residence.model");
+const Demographics = require("../models/residence.model");
+
 // Created and save a new residence
 let create = async (req, res, next) => {
 	try {
@@ -30,13 +31,13 @@ let getAll = (req, res, next) => {
 		let page = parseInt(req.query.page) || 1;
 		let limit = parseInt(req.query.limit) || 10;
 
-		Residences.findAll({
+		Residences.findAndCountAll({
 			where: { isDeleted: false },
 			limit: limit,
 			offset: (page - 1) * limit,
 		})
 			.then((data) => {
-				res.send(createSuccess(data, data.length, page, limit));
+				res.send(createSuccess(data.rows, data.count, page, limit));
 			})
 			.catch((err) => {
 				next(createHttpError(500, err));
@@ -60,6 +61,7 @@ let getResidenceById = async (req, res, next) => {
 		next(err);
 	}
 };
+
 let update = (req, res) => {
 	if (!req.body)
 		return res.send({
@@ -83,7 +85,7 @@ let update = (req, res) => {
 	});
 };
 
-let deleteResidence = (req, res) => {};
+let deleteResidence = () => {};
 
 let getDemographicsInResidence = async (req, res, next) => {
 	try {
@@ -91,7 +93,7 @@ let getDemographicsInResidence = async (req, res, next) => {
 
 		const demographics = await Demographics.findAndCountAll({
 			where: {
-				residenceId: id,
+				id,
 			},
 		});
 
