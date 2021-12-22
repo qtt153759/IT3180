@@ -85,7 +85,7 @@ let update = (req, res) => {
 	});
 };
 
-let deleteResidence = (req, res) => {};
+let deleteResidence = () => {};
 
 let getDemographicsInResidence = async (req, res, next) => {
 	try {

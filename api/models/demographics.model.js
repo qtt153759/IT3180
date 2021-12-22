@@ -67,6 +67,15 @@ const Demographics = sequelize.define(
 		domicile: {
 			type: DataTypes.STRING,
 		},
+		movingAddress: {
+			type: DataTypes.STRING,
+		},
+		movingDate: {
+			type: DataTypes.DATE,
+		},
+		movingNote: {
+			type: DataTypes.STRING,
+		},
 		createdAt: {
 			allowNull: false,
 			type: DataTypes.DATE,
@@ -91,7 +100,9 @@ const Demographics = sequelize.define(
 Demographics.associate = (models) => {
 	Demographics.hasOne(models.Account);
 
-	Demographics.hasOne(models.Nation);
+	Demographics.hasOne(models.Nation, {
+		foreignKey: "id",
+	});
 };
 
 module.exports = Demographics;

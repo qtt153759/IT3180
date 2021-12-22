@@ -1,15 +1,9 @@
-
 const Demographics = require("../models/demographics.model");
-// const Gender = require("../models/gender.model.js");
 const createHttpError = require("http-errors");
 const { demographicsValidator } = require("../helpers/validator");
 const createSuccess = require("../helpers/respose.success");
 const { Op } = require("sequelize");
 const demographicsService = require("../services/demographics.service");
-const createHttpError = require("http-errors");
-const { demographicsValidator } = require("../helpers/validator");
-const createSuccess = require("../helpers/respose.success");
-const Demographics = require("../models/demographics.model");
 
 // Created and save a new demographics
 let createDemographics = async (req, res, next) => {
@@ -51,7 +45,7 @@ let retrieveAllDemographic = async (req, res, next) => {
 		let condition = {};
 		let include = [];
 		let order = [];
-		let where={}
+		let where = {};
 		where.isDeleted = false;
 		condition.limit = limit;
 		condition.offset = (page - 1) * limit;
@@ -96,10 +90,10 @@ let retrieveAllDemographic = async (req, res, next) => {
 		if (order && order.length > 0) {
 			condition.order = [order];
 		}
-		condition.where=where
+		condition.where = where;
 		console.log("codition", condition);
 		await Demographics.findAndCountAll({
-			where: { isDeleted: false },
+			where: { isDeleted: false, condition },
 			limit: limit,
 			offset: (page - 1) * limit,
 		})
@@ -113,6 +107,7 @@ let retrieveAllDemographic = async (req, res, next) => {
 		next(err);
 	}
 };
+
 let getDemographicsById = async (req, res, next) => {
 	try {
 		const id = req.params.id;

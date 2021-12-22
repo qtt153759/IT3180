@@ -1,7 +1,6 @@
 const createHttpError = require("http-errors");
 const createSuccess = require("../helpers/respose.success");
-const db = require("../models/index");
-const Fee=db.fee
+const Fee = require("../models/fee.model");
 let getFee = async (req, res, next) => {
 	try {
 		console.log("vao controller");
@@ -83,7 +82,7 @@ let deleteFee = async (req, res, next) => {
 				plain: true,
 			}
 		)
-			.then((data) => {
+			.then(() => {
 				return res.send(createSuccess());
 			})
 			.catch((err) => {
