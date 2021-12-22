@@ -92,11 +92,7 @@ let retrieveAllDemographic = async (req, res, next) => {
 		}
 		condition.where = where;
 		console.log("codition", condition);
-		await Demographics.findAndCountAll({
-			where: { isDeleted: false, condition },
-			limit: limit,
-			offset: (page - 1) * limit,
-		})
+		await Demographics.findAndCountAll(condition)
 			.then((data) => {
 				res.send(createSuccess(data.rows, data.count, page, limit));
 			})
