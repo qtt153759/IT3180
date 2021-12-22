@@ -46,9 +46,11 @@ let retrieveAllDemographic = async (req, res, next) => {
 		let include = [];
 		let order = [];
 		let where = {};
+
 		where.isDeleted = false;
 		condition.limit = limit;
 		condition.offset = (page - 1) * limit;
+
 		//create include giữa 2 model associate(chưa có model Gender)
 		// if (req.query.gender) {
 		// 	let item = {
@@ -61,7 +63,12 @@ let retrieveAllDemographic = async (req, res, next) => {
 		// 	console.log("item");
 		// 	include.push(item);
 		// }
-		//create where clause
+
+		if (req.query.gender) {
+			where.gender = req.query.gender;
+			console.log(req.query.gender);
+		}
+
 		if (req.query.age) {
 			let rangeAge = demographicsService.checkAge(req.query.age);
 			where.birthday = {
@@ -78,11 +85,13 @@ let retrieveAllDemographic = async (req, res, next) => {
 			};
 			console.log("Check range", rangeAge);
 		}
+
 		//order by
 		if (req.query.orderColumn) {
 			let orderDirection = req.query.orderDirection || "DESC";
 			order = [req.query.orderColumn, orderDirection];
 		}
+
 		//push every thing in condition
 		if (include && include.length > 0) {
 			condition.include = include;

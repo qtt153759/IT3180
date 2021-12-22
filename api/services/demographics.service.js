@@ -4,7 +4,6 @@ let checkAge = async (age) => {
 	switch (age) {
 		case "Infant":
 			upper = 3;
-			lower = 0;
 			break;
 		case "Kindergarten":
 			upper = 6;
@@ -27,7 +26,6 @@ let checkAge = async (age) => {
 			lower = 20;
 			break;
 		case "Older":
-			upper = 150;
 			lower = 61;
 			break;
 	}
