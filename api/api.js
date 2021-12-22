@@ -1,6 +1,6 @@
 // configure environment variable
 require("dotenv").config();
-const sequelize = require("./models/index");
+const db = require("./models/index");
 const cors = require("cors");
 const express = require("express");
 const app = express();
@@ -10,7 +10,10 @@ const ResidenceRoute = require("./routes/residence.route");
 const DemographicsRoute = require("./routes/demographics.route");
 const AddressRoute = require("./routes/address.route");
 const AccountRoute = require("./routes/account.route");
+const FeeRoute = require("./routes/fee.route");
+const Fee2ResidenceRoute = require("./routes/fee2Residence.route");
 const NationRoute = require("./routes/nation.route");
+
 
 // parse application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: false }));
@@ -21,7 +24,7 @@ app.use(express.json());
 app.use(cors());
 
 // database
-sequelize
+db.sequelize
 	.sync({ alter: true, logging: false })
 	.then((data, err) => {
 		if (err) console.log("err: " + err);
@@ -35,7 +38,10 @@ app.use("/api/residence", ResidenceRoute);
 app.use("/api/demographics", DemographicsRoute);
 app.use("/api/address", AddressRoute);
 app.use("/api/account", AccountRoute);
+app.use("/api/fee", FeeRoute);
+app.use("/api/fee2Residence", Fee2ResidenceRoute);
 app.use("/api/nation", NationRoute);
+
 
 app.use((req, res, next) => {
 	next(createError(404, "Not Found"));

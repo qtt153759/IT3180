@@ -1,8 +1,9 @@
-const Demographics = require("../models/demographics.model");
+const db = require("../models/index");
 const createHttpError = require("http-errors");
 const { demographicsValidator } = require("../helpers/validator");
 const createSuccess = require("../helpers/respose.success");
 
+const Demographics = db.demographic;
 // Created and save a new demographics
 let createDemographics = async (req, res, next) => {
 	try {
