@@ -18,8 +18,8 @@ const Demographics = sequelize.define(
 			type: DataTypes.STRING(100),
 			allowNull: false,
 		},
-		gender: {
-			type: DataTypes.STRING,
+		genderId: {
+			type: DataTypes.INTEGER,
 		},
 		alias: {
 			type: DataTypes.STRING,
