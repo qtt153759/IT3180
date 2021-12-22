@@ -1,20 +1,21 @@
 const { DataTypes } = require("sequelize");
-module.exports = (sequelize) => {
-	const Nation = sequelize.define("nation", {
-		id: {
-			type: DataTypes.INTEGER,
-			allowNull: false,
-			primaryKey: true,
-		},
-		name: {
-			type: DataTypes.STRING,
-			allowNull: false,
-		},
-		additionalName: {
-			type: DataTypes.STRING,
-		},
-	});
+const sequelize = require("./index");
 
-	// Nation.belongsTo(Demographics);
-    return Nation
-};
+const Nation = sequelize.define("nation", {
+	id: {
+		type: DataTypes.INTEGER,
+		allowNull: false,
+		primaryKey: true,
+	},
+	name: {
+		type: DataTypes.STRING,
+		allowNull: false,
+	},
+	additionalName: {
+		type: DataTypes.STRING,
+	},
+});
+
+// Nation.associations();
+
+module.exports = Nation;

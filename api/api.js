@@ -1,8 +1,8 @@
 // configure environment variable
 require("dotenv").config();
-const db = require("./models/index");
 const cors = require("cors");
 const express = require("express");
+const sequelize = require("./models/index");
 const app = express();
 const createError = require("http-errors");
 
@@ -14,7 +14,6 @@ const FeeRoute = require("./routes/fee.route");
 const Fee2ResidenceRoute = require("./routes/fee2Residence.route");
 const NationRoute = require("./routes/nation.route");
 
-
 // parse application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: false }));
 
@@ -24,11 +23,10 @@ app.use(express.json());
 app.use(cors());
 
 // database
-db.sequelize
+sequelize
 	.sync({ alter: true, logging: false })
 	.then((data, err) => {
 		if (err) console.log("err: " + err);
-		if (data) console.log("data: " + data);
 	})
 	.catch((err) => {
 		console.log(err);
@@ -41,7 +39,6 @@ app.use("/api/account", AccountRoute);
 app.use("/api/fee", FeeRoute);
 app.use("/api/fee2Residence", Fee2ResidenceRoute);
 app.use("/api/nation", NationRoute);
-
 
 app.use((req, res, next) => {
 	next(createError(404, "Not Found"));
