@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("./index");
 
 // const Account = require("./account.model");
+const Residences = require("./residence.model");
 
 const Demographics = sequelize.define(
 	"demographics",
@@ -69,7 +70,15 @@ const Demographics = sequelize.define(
 		domicile: {
 			type: DataTypes.STRING,
 		},
-
+		movingAddress: {
+			type: DataTypes.STRING,
+		},
+		movingDate: {
+			type: DataTypes.DATE,
+		},
+		movingNote: {
+			type: DataTypes.STRING,
+		},
 		createdAt: {
 			allowNull: false,
 			type: DataTypes.DATE,
@@ -92,5 +101,7 @@ const Demographics = sequelize.define(
 );
 
 // Demographics.hasOne(Account);
+
+// Demographics.belongsTo(Residences);
 
 module.exports = Demographics;
