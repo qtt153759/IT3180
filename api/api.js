@@ -10,6 +10,7 @@ const ResidenceRoute = require("./routes/residence.route");
 const DemographicsRoute = require("./routes/demographics.route");
 const AddressRoute = require("./routes/address.route");
 const AccountRoute = require("./routes/account.route");
+const NationRoute = require("./routes/nation.route");
 
 // parse application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: false }));
@@ -34,12 +35,13 @@ app.use("/api/residence", ResidenceRoute);
 app.use("/api/demographics", DemographicsRoute);
 app.use("/api/address", AddressRoute);
 app.use("/api/account", AccountRoute);
+app.use("/api/nation", NationRoute);
 
 app.use((req, res, next) => {
 	next(createError(404, "Not Found"));
 });
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
 	return res.json({
 		status: err.status || 500,
 		message: err.message,
