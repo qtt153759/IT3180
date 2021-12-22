@@ -93,7 +93,7 @@ let getDemographicsInResidence = async (req, res, next) => {
 
 		const demographics = await Demographics.findAndCountAll({
 			where: {
-				residenceId: id,
+				id,
 			},
 		});
 

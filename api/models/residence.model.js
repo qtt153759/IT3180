@@ -1,4 +1,5 @@
 const { DataTypes } = require("sequelize");
+const Demographics = require("./demographics.model");
 const sequelize = require("./index");
 
 const Residences = sequelize.define(
@@ -45,5 +46,7 @@ const Residences = sequelize.define(
 		updatedAt: "updatedAt",
 	}
 );
+
+Residences.hasMany(Demographics, { foreignKey: "residenceId" });
 
 module.exports = Residences;
