@@ -147,7 +147,7 @@ let getDemographicsById = async (req, res, next) => {
 		next(err);
 	}
 };
-let getDemographicsStas = async (req, res, next) => {
+let getDemographicsStats = async (req, res, next) => {
 	try {
 		let gender = {};
 		gender.male = await Demographics.count({
@@ -175,6 +175,18 @@ let getDemographicsStas = async (req, res, next) => {
 			console.log(arrAge[i]);
 			let rangeAge = await demographicsService.checkAge(arrAge[i]);
 			console.log("rangeAge", rangeAge);
+			console.log(
+				"upper",
+				new Date(
+					new Date() - 24 * 60 * 60 * 1000 * 365 * rangeAge.upper
+				)
+			);
+			console.log(
+				"lower",
+				new Date(
+					new Date() - 24 * 60 * 60 * 1000 * 365 * rangeAge.lower
+				)
+			);
 			age[arrAge[i]] = await Demographics.count({
 				where: {
 					birthday: {
@@ -195,13 +207,13 @@ let getDemographicsStas = async (req, res, next) => {
 			});
 		}
 		console.log("age", age);
-		let stas = {
+		let stats = {
 			gender: gender,
 			age: age,
 			active: active,
 		};
-		console.log("stas", stas);
-		res.send(createSuccess(stas));
+		console.log("stats", stats);
+		res.send(createSuccess(stats));
 	} catch (err) {
 		next(err);
 	}
@@ -270,5 +282,5 @@ module.exports = {
 	deleteDemographics,
 	updateDemographic,
 	getDemographicsById,
-	getDemographicsStas,
+	getDemographicsStats,
 };
