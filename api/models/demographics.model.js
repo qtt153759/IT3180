@@ -70,15 +70,6 @@ const Demographics = sequelize.define(
 		domicile: {
 			type: DataTypes.STRING,
 		},
-		movingAddress: {
-			type: DataTypes.STRING,
-		},
-		movingDate: {
-			type: DataTypes.DATE,
-		},
-		movingNote: {
-			type: DataTypes.STRING,
-		},
 		createdAt: {
 			allowNull: false,
 			type: DataTypes.DATE,
