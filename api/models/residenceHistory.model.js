@@ -12,35 +12,36 @@ const ResidenceHistory = sequelize.define(
 			autoIncrement: true,
 			primaryKey: true,
 		},
+		residenceId: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+		},
 		demographicId: {
 			type: DataTypes.INTEGER,
 			allowNull: false,
 		},
 		fromDate: {
 			type: DataTypes.DATE,
-			allowNull: false,
 		},
 		toDate: {
 			type: DataTypes.DATE,
-			allowNull: false,
 		},
 		address: {
 			type: DataTypes.STRING(255),
-			allowNull: false,
 		},
 		note: {
 			type: DataTypes.STRING(255),
 		},
-		type: {
+		fromType: {
 			type: DataTypes.INTEGER,
-			allowNull: false,
+		},
+		toType: {
+			type: DataTypes.INTEGER,
 		},
 		createdAt: {
-			allowNull: false,
 			type: DataTypes.DATE,
 		},
 		updatedAt: {
-			allowNull: false,
 			type: DataTypes.DATE,
 		},
 		isDeleted: {
@@ -58,7 +59,7 @@ const ResidenceHistory = sequelize.define(
 
 ResidenceHistory.belongsTo(Residences, {
 	as: "ResidenceChange",
-	foreignKey: { name: "residence_id", allowNull: false },
+	foreignKey: { name: "residenceId", allowNull: false, underscored: true },
 });
 
 module.exports = ResidenceHistory;

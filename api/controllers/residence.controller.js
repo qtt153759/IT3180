@@ -136,12 +136,15 @@ let getDemographicsInResidence = async (req, res, next) => {
 
 let getResidenceChange = async (req, res, next) => {
 	try {
-		const residenceChange = await ResidenceHistory.findAll({
-			where: { isDeleted: false },
+		const id = req.params.id;
+		if (!id) throw createHttpError(400, "id not found");
+		const residenceChange = await ResidenceHistory.findAndCountAll({
+			where: { isDeleted: false, residenceId: id },
 		});
 
-		console.log("aaa");
-		return res.send(createSuccess(residenceChange));
+		return res.send(
+			createSuccess(residenceChange.rows, residenceChange.count)
+		);
 	} catch (err) {
 		next(err);
 	}

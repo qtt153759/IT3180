@@ -253,12 +253,18 @@ let updateDemographicStatus = async (req, res, next) => {
 			throw createHttpError(400, `id: ${id} doesnot exist`);
 		}
 
-		demographic.setDataValue("status", status);
+		const oldStatus = demographic.status;
 
+		demographic.status = status;
 		await demographic.save();
 
-		if (status === 2 || status === 3) {
-			await logResidenceHistory(status);
+		if ((status === 2 || 3) && oldStatus != status) {
+			await logResidenceHistory({
+				fromType: oldStatus,
+				toType: status,
+				demographicId: demographic.id,
+				residenceId: demographic.residenceId,
+			});
 		}
 
 		return res.send(createSuccess(demographic));
@@ -291,7 +297,6 @@ let deleteDemographics = async (req, res, next) => {
 		next(err);
 	}
 };
-
 
 module.exports = {
 	createDemographics,
