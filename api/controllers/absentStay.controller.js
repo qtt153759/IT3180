@@ -9,6 +9,12 @@ let createAbsentStay = async (req, res, next) => {
 			req.body;
 		if (!(demographic_id && fromDate && toDate && address && type)) {
 		}
+		const demographicExist = await Demographics.findOne({
+			where: { id: demographic_id, isDeleted: false, isDead: false },
+		});
+		if (!demographicExist) {
+			throw createHttpError(500, "this demographic_id is not existed");
+		}
 		const exist = await AbsentStay.findOne({
 			where: {
 				demographic_id: demographic_id,
