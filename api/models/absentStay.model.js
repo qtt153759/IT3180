@@ -60,7 +60,7 @@ const AbsentStay = sequelize.define(
 
 // AbsentStay.hasOne(Account);
 AbsentStay.belongsTo(Demographics, {
-	as: "absentStay",
+	as: "demographic",
 	foreignKey: { name: "demographic_id", allowNull: false },
 });
 module.exports = AbsentStay;
