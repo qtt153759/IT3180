@@ -5,7 +5,7 @@ const route = express.Router();
 
 route.get("/", absentStayController.getAllStayAbsent);
 route.get("/:id", absentStayController.getStayAbsentById);
-route.post("/absent", absentStayController.createAbsent);
+route.post("/", absentStayController.createAbsentStay);
 
 
 module.exports = route;
