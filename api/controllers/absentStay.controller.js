@@ -65,7 +65,7 @@ let getAllStayAbsent = async (req, res, next) => {
 			include: [
 				{
 					model: Demographics,
-					as: "absentStay",
+					as: "demographic",
 				},
 			],
 			order: [order],
@@ -86,15 +86,12 @@ let getStayAbsentById = async (req, res, next) => {
 	try {
 		let page = parseInt(req.query.page) || 1;
 		let limit = parseInt(req.query.limit) || 10;
-		if (!req.params.id) {
-			throw createHttpError(500, "Missing id params");
-		}
 		AbsentStay.findAndCountAll({
-			where: { demographic_id: req.params.id },
+			where: { id: req.params.id },
 			include: [
 				{
 					model: Demographics,
-					as: "absentStay",
+					as: "demographic",
 				},
 			],
 			limit: limit,
