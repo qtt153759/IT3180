@@ -8,7 +8,7 @@ const Demographics = require("../models/demographics.model");
 let create = async (req, res, next) => {
 	try {
 		let { headerId, provinceId, districtId, wardId } = req.body;
-		if (!(headerId && provinceId && districtId && wardId)) {
+		if (!(provinceId && districtId && wardId)) {
 			throw createHttpError(400, "body missing field!");
 		}
 
