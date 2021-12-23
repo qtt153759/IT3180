@@ -150,6 +150,46 @@ let getResidenceChange = async (req, res, next) => {
 	}
 };
 
+let moveDemographics = async (req, res, next) => {
+	try {
+		const {
+			residence_id: residenceId,
+			demographic_ids: demographicIds,
+			new_header_id: newHeaderId,
+			residence_number,
+		} = req.body;
+
+		const demographics = await Demographics.findAll({
+			where: {
+				residenceId,
+			},
+			include: Residences,
+		});
+
+		let residence = await Residences.create({
+			...demographics.residence,
+			residence_number,
+			headerId: newHeaderId,
+		});
+
+		await Promise.all(
+			demographics
+				.filter((item) => demographicIds.includes(item.id))
+				.map(async (item) => {
+					item.residence_id = residence.id;
+					await item.save();
+				})
+		);
+
+		const id = demographics.residence?.headerId;
+		console.log(id);
+
+		res.send(createSuccess());
+	} catch (err) {
+		next(err);
+	}
+};
+
 module.exports = {
 	create,
 	getAll,
@@ -158,4 +198,5 @@ module.exports = {
 	getResidenceById,
 	getDemographicsInResidence,
 	getResidenceChange,
+	moveDemographics,
 };

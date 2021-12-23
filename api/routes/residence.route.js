@@ -17,4 +17,6 @@ route.get("/:id/demographics", residenceController.getDemographicsInResidence);
 // get thay đổi của hộ khẩu
 route.get("/change", residenceController.getResidenceChange);
 
+route.post("/move", residenceController.moveDemographics);
+
 module.exports = route;

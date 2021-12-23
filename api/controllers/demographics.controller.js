@@ -183,6 +183,7 @@ let getDemographicsStats = async (req, res, next) => {
 			"Adult",
 			"Older",
 		];
+		
 		for (let i = 0; i < arrAge.length; i++) {
 			let rangeAge = await demographicsService.checkAge(arrAge[i]);
 			age[arrAge[i]] = await Demographics.count({
@@ -204,6 +205,7 @@ let getDemographicsStats = async (req, res, next) => {
 				},
 			});
 		}
+
 		let stats = {
 			gender: gender,
 			age: age,
