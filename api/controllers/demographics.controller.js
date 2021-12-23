@@ -252,7 +252,7 @@ let updateDemographicStatus = async (req, res, next) => {
 		demographic.status = status;
 		await demographic.save();
 
-		if ((status === 2 || 3) && oldStatus != status) {
+		if (oldStatus != status) {
 			await logResidenceHistory({
 				fromType: oldStatus,
 				toType: status,
