@@ -24,11 +24,11 @@ let checkAge = async (age) => {
 			break;
 		case "Adult":
 			upper = 60;
-			lower = 20;
+			lower = 18;
 			break;
 		case "Older":
 			upper = 150;
-			lower = 61;
+			lower = 60;
 			break;
 	}
 	return { upper, lower };

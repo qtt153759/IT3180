@@ -3,7 +3,7 @@ const route = express.Router();
 const demographicsController = require("../controllers/demographics.controller");
 
 route.get("/", demographicsController.retrieveAllDemographic);
-route.get("/stas", demographicsController.getDemographicsStas);
+route.get("/stats", demographicsController.getDemographicsStats);
 route.get("/:id", demographicsController.getDemographicsById);
 route.post("/", demographicsController.createDemographics);
 route.put("/update", demographicsController.updateDemographic);

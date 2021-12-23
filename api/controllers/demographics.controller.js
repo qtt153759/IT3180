@@ -125,7 +125,6 @@ let retrieveAllDemographic = async (req, res, next) => {
 let getDemographicsById = async (req, res, next) => {
 	try {
 		const id = req.params.id;
-		console.log(id);
 		let demographicData = await Demographics.findOne({
 			where: { id: id },
 		});
@@ -138,7 +137,7 @@ let getDemographicsById = async (req, res, next) => {
 		next(err);
 	}
 };
-let getDemographicsStas = async (req, res, next) => {
+let getDemographicsStats = async (req, res, next) => {
 	try {
 		let gender = {};
 		gender.male = await Demographics.count({
@@ -147,7 +146,6 @@ let getDemographicsStas = async (req, res, next) => {
 		gender.female = await Demographics.count({
 			where: { genderId: 2, isDeleted: false, isDead: false },
 		});
-		console.log("gender", gender);
 		let active = await Demographics.count({
 			where: { isDeleted: false, isDead: false },
 		});
@@ -163,9 +161,7 @@ let getDemographicsStas = async (req, res, next) => {
 			"Older",
 		];
 		for (let i = 0; i < arrAge.length; i++) {
-			console.log(arrAge[i]);
 			let rangeAge = await demographicsService.checkAge(arrAge[i]);
-			console.log("rangeAge", rangeAge);
 			age[arrAge[i]] = await Demographics.count({
 				where: {
 					birthday: {
@@ -185,14 +181,12 @@ let getDemographicsStas = async (req, res, next) => {
 				},
 			});
 		}
-		console.log("age", age);
-		let stas = {
+		let stats = {
 			gender: gender,
 			age: age,
 			active: active,
 		};
-		console.log("stas", stas);
-		res.send(createSuccess(stas));
+		res.send(createSuccess(stats));
 	} catch (err) {
 		next(err);
 	}
@@ -304,6 +298,6 @@ module.exports = {
 	deleteDemographics,
 	updateDemographic,
 	getDemographicsById,
-	getDemographicsStas,
+	getDemographicsStats,
 	updateDemographicStatus,
 };
