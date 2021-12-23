@@ -8,6 +8,7 @@ route.get("/:id", demographicsController.getDemographicsById);
 route.post("/", demographicsController.createDemographics);
 route.put("/update", demographicsController.updateDemographic);
 route.delete("/delete/:id", demographicsController.deleteDemographics);
+route.put("/update/status/:id", demographicsController.updateDemographicStatus);
 
 route.get("/nation");
 

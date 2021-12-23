@@ -1,9 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("./index");
 
-// const Account = require("./account.model");
-const Residences = require("./residence.model");
-
 const Demographics = sequelize.define(
 	"demographics",
 	{
@@ -95,8 +92,8 @@ const Demographics = sequelize.define(
 	}
 );
 
-// Demographics.hasOne(Account);
-
-// Demographics.belongsTo(Residences);
+Demographics.associate = (models) => {
+	Demographics.belongsTo(models.residences);
+};
 
 module.exports = Demographics;

@@ -3,20 +3,15 @@ const createSuccess = require("../helpers/respose.success");
 
 const Residences = require("../models/residence.model");
 const Demographics = require("../models/demographics.model");
+const ResidenceHistory = require("../models/residenceHistory.model");
 
 // Created and save a new residence
 let create = async (req, res, next) => {
 	try {
-		let { headerId, provinceId, districtId, wardId } = req.body;
+		let { provinceId, districtId, wardId } = req.body;
 		if (!(provinceId && districtId && wardId)) {
 			throw createHttpError(400, "body missing field!");
 		}
-
-		const exist = await Residences.findOne({
-			where: { headerId: headerId, isDeleted: false },
-		});
-		console.log(headerId);
-		if (exist) throw createHttpError(400, "Dupicate header_id");
 
 		const data = await Residences.create(req.body);
 
@@ -47,6 +42,7 @@ let getAll = (req, res, next) => {
 		next(err);
 	}
 };
+
 let getResidenceById = async (req, res, next) => {
 	try {
 		const id = req.params.id;
@@ -63,42 +59,72 @@ let getResidenceById = async (req, res, next) => {
 	}
 };
 
-let update = (req, res) => {
-	if (!req.body)
-		return res.send({
-			message: "empty body",
+let updateResidence = async (req, res, next) => {
+	try {
+		if (!req.body)
+			return res.send({
+				message: "empty body",
+			});
+
+		let id = req.body.id;
+
+		let updatedField = req.body;
+
+		let residence = await Residences.findOne({
+			where: {
+				id,
+				isDeleted: false,
+			},
 		});
 
-	let updatedField = {};
+		if (!residence) {
+			throw Error(`Residence not updated. id: ${id}`);
+		}
 
-	let id = req.body.id;
-	if (req.body.header_id) updatedField.headerId = req.body.header_id;
-	if (req.body.province_id) updatedField.provinceId = req.body.province_id;
-	if (req.body.district_id) updatedField.districtId = req.body.district_id;
-	if (req.body.ward_id) updatedField.wardId = req.body.ward_id;
-	if (req.body.address) updatedField.address = req.body.address;
+		residence = updatedField;
+		await residence.save();
 
-	Residences.update(updatedField, {
-		where: {
-			id: id,
-			isDeleted: false,
-		},
-	});
+		res.send(createSuccess(residence));
+	} catch (err) {
+		next(err);
+	}
 };
 
-let deleteResidence = () => {};
+let deleteResidence = async (req, res, next) => {
+	try {
+		if (!req.params.id) throw createHttpError(400, "id not found");
+
+		const residence = await Residences.findOne({
+			where: {
+				id: req.params.id,
+				isDeleted: false,
+			},
+		});
+
+		if (!residence) throw createHttpError(400, "residence not found");
+
+		residence.isDeleted = true;
+
+		await residence.save();
+
+		return res.send(createSuccess(residence));
+	} catch (err) {
+		next(err);
+	}
+};
 
 let getDemographicsInResidence = async (req, res, next) => {
 	try {
 		const id = req.params.id;
 
-		const demographics = await Demographics.findAll({
-			where: { residenceId: id },
-		});
-
-		const residence = await Residences.findOne({
-			where: { id },
-		});
+		let [demographics, residence] = await Promise.all([
+			Demographics.findAll({
+				where: { residenceId: id },
+			}),
+			Residences.findOne({
+				where: { id },
+			}),
+		]);
 
 		residence.setDataValue("demographics", demographics);
 
@@ -108,11 +134,25 @@ let getDemographicsInResidence = async (req, res, next) => {
 	}
 };
 
+let getResidenceChange = async (req, res, next) => {
+	try {
+		const residenceChange = await ResidenceHistory.findAll({
+			where: { isDeleted: false },
+		});
+
+		console.log("aaa");
+		return res.send(createSuccess(residenceChange));
+	} catch (err) {
+		next(err);
+	}
+};
+
 module.exports = {
 	create,
 	getAll,
-	update,
+	updateResidence,
 	deleteResidence,
 	getResidenceById,
 	getDemographicsInResidence,
+	getResidenceChange,
 };

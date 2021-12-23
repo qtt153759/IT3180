@@ -11,6 +11,10 @@ const Residences = sequelize.define(
 			autoIncrement: true,
 			primaryKey: true,
 		},
+		residence_number: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		}, 
 		headerId: {
 			type: DataTypes.INTEGER,
 		},

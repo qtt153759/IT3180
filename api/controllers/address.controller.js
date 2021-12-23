@@ -1,4 +1,4 @@
-const addressData = require("../models/dvhcvn.json");
+const addressData = require("../data/dvhcvn.json");
 const utils = require("../utils/utils");
 
 exports.getProvince = (req, res) => {
