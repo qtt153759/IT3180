@@ -47,7 +47,7 @@ let createDemographics = async (req, res, next) => {
 					`residence id ${residence.id} already had headerId ${residence.headerId}`
 				);
 			} else {
-				residence.headerId = residence.id;
+				residence.headerId = demographic.id;
 				residence.save();
 			}
 		}
