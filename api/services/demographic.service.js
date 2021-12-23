@@ -33,6 +33,7 @@ let checkAge = async (age) => {
 	}
 	return { upper, lower };
 };
+
 module.exports = {
 	checkAge,
 };

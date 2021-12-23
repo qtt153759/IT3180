@@ -1,4 +1,4 @@
-const nationData = require("./../models/nation.json");
+const nationData = require("../data/nation.json");
 
 exports.getNation = (req, res, next) => {
 	try {
