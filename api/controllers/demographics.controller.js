@@ -7,6 +7,7 @@ const demographicsService = require("../services/demographic.service");
 const { logResidenceHistory } = require("../services/residence.service");
 const Demographics = require("../models/demographics.model");
 const Residences = require("../models/residence.model");
+const relationship = require("../constance/relationship");
 
 // Created and save a new demographics
 let createDemographics = async (req, res, next) => {
@@ -32,7 +33,7 @@ let createDemographics = async (req, res, next) => {
 
 		let demographic = await Demographics.create(req.body);
 
-		if (relationshipWithHeader == 11) {
+		if (relationshipWithHeader == relationship.CHU_HO) {
 			let residence = await Residences.findOne({
 				where: {
 					id: residenceId,
@@ -183,7 +184,7 @@ let getDemographicsStats = async (req, res, next) => {
 			"Adult",
 			"Older",
 		];
-		
+
 		for (let i = 0; i < arrAge.length; i++) {
 			let rangeAge = await demographicsService.checkAge(arrAge[i]);
 			age[arrAge[i]] = await Demographics.count({
