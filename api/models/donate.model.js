@@ -1,9 +1,9 @@
 const { DataTypes } = require("sequelize");
-
 const sequelize = require("./index");
+const Donate2Residence = require("../models/donate2Residence.model");
 
-const Fee2Residence = sequelize.define(
-	"Fee2Residence",
+const Donate = sequelize.define(
+	"donate",
 	{
 		id: {
 			type: DataTypes.INTEGER,
@@ -11,17 +11,12 @@ const Fee2Residence = sequelize.define(
 			autoIncrement: true,
 			primaryKey: true,
 		},
-		fee_id: {
-			type: DataTypes.INTEGER,
+		name: {
+			type: DataTypes.STRING(255),
 			allowNull: false,
 		},
-		residence_id: {
-			type: DataTypes.INTEGER,
-			allowNull: false,
-		},
-		money: {
-			type: DataTypes.INTEGER,
-			allowNull: false,
+		description: {
+			type: DataTypes.STRING(255),
 		},
 		createdAt: {
 			allowNull: false,
@@ -43,8 +38,12 @@ const Fee2Residence = sequelize.define(
 		updatedAt: "updatedAt",
 	}
 );
-Fee2Residence.associate = (models) => {
-	Fee2Residence.hasOne(models.Fee);
-};
-
-module.exports = Fee2Residence;
+Donate.hasMany(Donate2Residence, {
+	as: "donate",
+	foreignKey: { name: "donate_id", allowNull: false },
+});
+Donate2Residence.belongsTo(Donate, {
+	as: "donate",
+	foreignKey: { name: "donate_id", allowNull: false },
+});
+module.exports = Donate;

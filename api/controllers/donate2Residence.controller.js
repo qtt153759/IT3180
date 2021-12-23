@@ -1,16 +1,16 @@
 const createHttpError = require("http-errors");
 const createSuccess = require("../helpers/respose.success");
-// const Fee2Residence = require("../models/Fee2Residence.model");
-const db = require("../models/index");
-const Fee2Residence = db.fee2Residence;
-const Fee = db.fee;
-let getAllFee2Residence = async (req, res, next) => {
+const Donate = require("../models/donate.model");
+const Donate2Residence = require("../models/donate2Residence.model");
+const Residence = require("../models/residence.model");
+let getAllDonate2Residence = async (req, res, next) => {
 	try {
 		console.log("vao controller");
-		await Fee2Residence.findAll({
+		await Donate2Residence.findAll({
 			include: [
 				{
-					model: Fee,
+					model: Donate,
+					as: "donate",
 					attributes: ["name", "description"],
 					required: true,
 				},
@@ -26,18 +26,19 @@ let getAllFee2Residence = async (req, res, next) => {
 		next(err);
 	}
 };
-let getFee2ResidenceByResidence = async (req, res, next) => {
+let getDonate2ResidenceByResidence = async (req, res, next) => {
 	try {
 		console.log("vao controller");
 		if (!req.params.id) {
-			throw createHttpError(400, "params missing residenc_id!");
+			throw createHttpError(400, "params missing residence_id!");
 		}
 		let id = req.params.id;
-		await Fee2Residence.findAll({
+		await Donate2Residence.findAll({
 			where: { residence_id: id },
 			include: [
 				{
-					model: Fee,
+					model: Donate,
+					as: "donate",
 					attributes: ["name", "description"],
 					required: true,
 				},
@@ -53,18 +54,19 @@ let getFee2ResidenceByResidence = async (req, res, next) => {
 		next(err);
 	}
 };
-let getFee2ResidenceByFee = async (req, res, next) => {
+let getDonate2ResidenceByDonate = async (req, res, next) => {
 	try {
 		console.log("vao controller");
 		if (!req.params.id) {
-			throw createHttpError(400, "params missing residenc_id!");
+			throw createHttpError(400, "params missing residence_id!");
 		}
 		let id = req.params.id;
-		await Fee2Residence.findAll({
-			where: { fee_id: id },
+		await Donate2Residence.findAll({
+			where: { donate_id: id },
 			include: [
 				{
-					model: Fee,
+					model: Donate,
+					as: "donate",
 					attributes: ["name", "description"],
 					required: true,
 				},
@@ -80,12 +82,12 @@ let getFee2ResidenceByFee = async (req, res, next) => {
 		next(err);
 	}
 };
-let createFee2Residence = async (req, res, next) => {
+let createDonate2Residence = async (req, res, next) => {
 	try {
 		console.log("vao controller create");
 		if (
 			!req.body ||
-			!req.body.fee_id ||
+			!req.body.donate_id ||
 			!req.body.residence_id ||
 			!req.body.money
 		) {
@@ -93,30 +95,44 @@ let createFee2Residence = async (req, res, next) => {
 		} else if (req.body.money <= 0) {
 			throw createHttpError(400, "money must be positive!");
 		}
-
-		console.log(req.body);
-		const exist = await Fee2Residence.findOne({
+		const exist = await Donate2Residence.findOne({
 			where: {
-				fee_id: req.body.fee_id,
+				donate_id: req.body.donate_id,
 				residence_id: req.body.residence_id,
 			},
 		});
 		if (exist)
-			throw createHttpError(400, "Dupicate both fee_id and residence_id");
+			throw createHttpError(
+				400,
+				"Dupicate both donate_id and residence_id"
+			);
 
-		const data = await Fee2Residence.create(req.body);
+		const residenceExist = await Residence.findOne({
+			where: { id: req.body.residence_id },
+		});
+		if (!residenceExist) {
+			throw createHttpError(400, "residence is not Exist!");
+		}
+		const donateExist = await Donate.findOne({
+			where: { id: req.body.donate_id },
+		});
+		if (!donateExist) {
+			throw createHttpError(400, "donate is not Exist!");
+		}
+
+		const data = await Donate2Residence.create(req.body);
 
 		return res.send(createSuccess(data));
 	} catch (err) {
 		next(err);
 	}
 };
-let updateFee2Residence = async (req, res, next) => {
+let updateDonate2Residence = async (req, res, next) => {
 	try {
 		if (
 			!req.body ||
 			!req.body.id ||
-			!req.body.fee_id ||
+			!req.body.donate_id ||
 			!req.body.residence_id ||
 			!req.body.money
 		) {
@@ -124,23 +140,39 @@ let updateFee2Residence = async (req, res, next) => {
 		} else if (req.body.money <= 0) {
 			throw createHttpError(400, "money must be positive!");
 		}
-		const exist = await Fee2Residence.findOne({
+		const exist = await Donate2Residence.findOne({
 			where: {
-				fee_id: req.body.fee_id,
+				donate_id: req.body.donate_id,
 				residence_id: req.body.residence_id,
 			},
 		});
 		if (exist)
-			throw createHttpError(400, "Dupicate both fee_id and residence_id");
-		Fee2Residence.update(req.body, {
+			throw createHttpError(
+				400,
+				"Dupicate both donate_id and residence_id"
+			);
+		const residenceExist = await Residence.findOne({
+			where: { id: req.body.residence_id },
+		});
+		if (!residenceExist) {
+			throw createHttpError(400, "residence is not Exist!");
+		}
+		const donateExist = await Donate.findOne({
+			where: { id: req.body.donate_id },
+		});
+		if (!donateExist) {
+			throw createHttpError(400, "donate is not Exist!");
+		}
+
+		Donate2Residence.update(req.body, {
 			where: {
-				id: id,
+				id: req.body.id,
 				isDeleted: false,
 			},
 		})
 			.then(async () => {
-				Fee2Residence.findOne({
-					where: { id },
+				Donate2Residence.findOne({
+					where: { id: req.body.id },
 				})
 					.then((data) => {
 						return res.send(createSuccess(data));
@@ -157,11 +189,11 @@ let updateFee2Residence = async (req, res, next) => {
 	}
 };
 
-let deleteFee2Residence = async (req, res, next) => {
+let deleteDonate2Residence = async (req, res, next) => {
 	try {
 		const id = req.params.id;
 		console.log("id", id);
-		Fee2Residence.update(
+		Donate2Residence.update(
 			{
 				isDeleted: true,
 			},
@@ -185,10 +217,10 @@ let deleteFee2Residence = async (req, res, next) => {
 	}
 };
 module.exports = {
-	getFee2ResidenceByResidence,
-	getAllFee2Residence,
-	createFee2Residence,
-	updateFee2Residence,
-	deleteFee2Residence,
-	getFee2ResidenceByFee,
+	getDonate2ResidenceByResidence,
+	getAllDonate2Residence,
+	createDonate2Residence,
+	updateDonate2Residence,
+	deleteDonate2Residence,
+	getDonate2ResidenceByDonate,
 };

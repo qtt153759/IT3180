@@ -1,10 +1,11 @@
 const createHttpError = require("http-errors");
 const createSuccess = require("../helpers/respose.success");
-const Fee = require("../models/fee.model");
-let getFee = async (req, res, next) => {
+const Donate = require("../models/donate.model");
+const Donate2Residence = require("../models/donate2Residence.model");
+let getDonate = async (req, res, next) => {
 	try {
 		console.log("vao controller");
-		await Fee.findAll()
+		await Donate.findAll()
 			.then((data) => {
 				res.send(createSuccess(data));
 			})
@@ -15,39 +16,39 @@ let getFee = async (req, res, next) => {
 		next(err);
 	}
 };
-let createFee = async (req, res, next) => {
+let createDonate = async (req, res, next) => {
 	try {
 		console.log("vao controller create");
 		if (!req.body || !req.body.name || !req.body.description) {
 			throw createHttpError(400, "body missing field!");
 		}
 		console.log(req.body);
-		const exist = await Fee.findOne({
+		const exist = await Donate.findOne({
 			where: { name: req.body.name },
 		});
-		if (exist) throw createHttpError(400, "Dupicate name of fee");
+		if (exist) throw createHttpError(400, "Dupicate name of Donate");
 
-		const data = await Fee.create(req.body);
+		const data = await Donate.create(req.body);
 
 		return res.send(createSuccess(data));
 	} catch (err) {
 		next(err);
 	}
 };
-let updateFee = async (req, res, next) => {
+let updateDonate = async (req, res, next) => {
 	try {
 		let { id } = req.body;
 		if (!id) {
 			throw createHttpError(400, "Missing 'id' field");
 		}
-		Fee.update(req.body, {
+		Donate.update(req.body, {
 			where: {
 				id: id,
 				isDeleted: false,
 			},
 		})
 			.then(async () => {
-				Fee.findOne({
+				Donate.findOne({
 					where: { id },
 				})
 					.then((data) => {
@@ -65,11 +66,11 @@ let updateFee = async (req, res, next) => {
 	}
 };
 
-let deleteFee = async (req, res, next) => {
+let deleteDonate = async (req, res, next) => {
 	try {
 		const id = req.params.id;
 		console.log("id", id);
-		Fee.update(
+		Donate.update(
 			{
 				isDeleted: true,
 			},
@@ -93,8 +94,8 @@ let deleteFee = async (req, res, next) => {
 	}
 };
 module.exports = {
-	getFee,
-	createFee,
-	updateFee,
-	deleteFee,
+	getDonate,
+	createDonate,
+	updateDonate,
+	deleteDonate,
 };
