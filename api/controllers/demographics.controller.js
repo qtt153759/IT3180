@@ -4,6 +4,7 @@ const createSuccess = require("../helpers/respose.success");
 const { Op } = require("sequelize");
 
 const demographicsService = require("../services/demographic.service");
+const { logResidenceHistory } = require("../services/residence.service");
 const Demographics = require("../models/demographics.model");
 
 // Created and save a new demographics
@@ -48,25 +49,19 @@ let retrieveAllDemographic = async (req, res, next) => {
 		//create include giữa 2 model associate(chưa có model Gender)
 		if (req.query.gender) {
 			let arrGender = req.query.gender.split(",");
-			// console.log("arrayGender", arrGender);
+
 			let conditionGender = [];
-			for (let i = 0; i < arrGender.length; i++) {
-				conditionGender.push(+arrGender[i]);
+			for (let gender of arrGender) {
+				conditionGender.push(+gender);
 			}
 			where.genderId = conditionGender;
-
-			// console.log("item");
-			// include.push(item);
 		}
 		//create where clause
 		if (req.query.age) {
 			let arrAge = req.query.age.split(",");
-			// console.log("arrAge", arrAge);
 			let conditionAge = [];
-			for (let i = 0; i < arrAge.length; i++) {
-				let rangeAge = await demographicsService.checkAge(arrAge[i]);
-				// console.log(arrAge[i]);
-				// console.log(rangeAge);
+			for (let age of arrAge) {
+				let rangeAge = await demographicsService.checkAge(age);
 				let object = {
 					[Op.between]: [
 						new Date(
@@ -81,11 +76,9 @@ let retrieveAllDemographic = async (req, res, next) => {
 				};
 				conditionAge.push(object);
 			}
-			// console.log("arrCondition", conditionAge);
 			where.birthday = {
 				[Op.or]: conditionAge,
 			};
-			// console.log(where.birthday);
 		}
 		if (req.query.name) {
 			where = {
@@ -117,8 +110,6 @@ let retrieveAllDemographic = async (req, res, next) => {
 			condition.order = [order];
 		}
 		condition.where = where;
-		// console.log("where", where);
-		// console.log("codition", condition);
 		await Demographics.findAndCountAll(condition)
 			.then((data) => {
 				res.send(createSuccess(data.rows, data.count, page, limit));
@@ -134,7 +125,6 @@ let retrieveAllDemographic = async (req, res, next) => {
 let getDemographicsById = async (req, res, next) => {
 	try {
 		const id = req.params.id;
-		console.log(id);
 		let demographicData = await Demographics.findOne({
 			where: { id: id },
 		});
@@ -156,7 +146,6 @@ let getDemographicsStats = async (req, res, next) => {
 		gender.female = await Demographics.count({
 			where: { genderId: 2, isDeleted: false, isDead: false },
 		});
-		console.log("gender", gender);
 		let active = await Demographics.count({
 			where: { isDeleted: false, isDead: false },
 		});
@@ -172,21 +161,7 @@ let getDemographicsStats = async (req, res, next) => {
 			"Older",
 		];
 		for (let i = 0; i < arrAge.length; i++) {
-			console.log(arrAge[i]);
 			let rangeAge = await demographicsService.checkAge(arrAge[i]);
-			console.log("rangeAge", rangeAge);
-			console.log(
-				"upper",
-				new Date(
-					new Date() - 24 * 60 * 60 * 1000 * 365 * rangeAge.upper
-				)
-			);
-			console.log(
-				"lower",
-				new Date(
-					new Date() - 24 * 60 * 60 * 1000 * 365 * rangeAge.lower
-				)
-			);
 			age[arrAge[i]] = await Demographics.count({
 				where: {
 					birthday: {
@@ -206,26 +181,28 @@ let getDemographicsStats = async (req, res, next) => {
 				},
 			});
 		}
-		console.log("age", age);
 		let stats = {
 			gender: gender,
 			age: age,
 			active: active,
 		};
-		console.log("stats", stats);
 		res.send(createSuccess(stats));
 	} catch (err) {
 		next(err);
 	}
 };
+
+// cập nhật thông tin cơ bản của nhân khẩu (không liên quan đến hộ khẩu)
 let updateDemographic = async (req, res, next) => {
 	try {
 		let { id } = req.body;
 		if (!id) {
 			throw createHttpError(400, "Missing 'id' field");
 		}
+
 		const { error } = demographicsValidator(req.body);
 		if (error) throw createHttpError(500, error);
+
 		Demographics.update(req.body, {
 			where: {
 				id: id,
@@ -250,6 +227,40 @@ let updateDemographic = async (req, res, next) => {
 		next(err);
 	}
 };
+
+let updateDemographicStatus = async (req, res, next) => {
+	try {
+		if (!req.params.id) {
+			throw createHttpError(400, "missing demographics id");
+		}
+
+		if (!req.body.status) {
+			throw createHttpError(400, "missing body status");
+		}
+
+		const id = req.params.id;
+		const status = req.body.status;
+
+		const demographic = await Demographics.findOne({ where: { id } });
+
+		if (!demographic) {
+			throw createHttpError(400, `id: ${id} doesnot exist`);
+		}
+
+		demographic.setDataValue("status", status);
+
+		await demographic.save();
+
+		if (status === 2 || status === 3) {
+			await logResidenceHistory(status);
+		}
+
+		return res.send(createSuccess(demographic));
+	} catch (err) {
+		next(err);
+	}
+};
+
 let deleteDemographics = async (req, res, next) => {
 	try {
 		const id = req.params.id;
@@ -262,11 +273,9 @@ let deleteDemographics = async (req, res, next) => {
 					id,
 					isDeleted: false,
 				},
-				returning: true,
-				plain: true,
 			}
 		)
-			.then((data) => {
+			.then(() => {
 				return res.send(createSuccess());
 			})
 			.catch((err) => {
@@ -276,6 +285,8 @@ let deleteDemographics = async (req, res, next) => {
 		next(err);
 	}
 };
+
+
 module.exports = {
 	createDemographics,
 	retrieveAllDemographic,
@@ -283,4 +294,5 @@ module.exports = {
 	updateDemographic,
 	getDemographicsById,
 	getDemographicsStats,
+	updateDemographicStatus,
 };
