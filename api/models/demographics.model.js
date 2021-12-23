@@ -92,8 +92,4 @@ const Demographics = sequelize.define(
 	}
 );
 
-Demographics.associate = (models) => {
-	Demographics.belongsTo(models.residences);
-};
-
 module.exports = Demographics;

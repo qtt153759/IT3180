@@ -14,7 +14,7 @@ const Residences = sequelize.define(
 		residence_number: {
 			type: DataTypes.STRING,
 			allowNull: false,
-		}, 
+		},
 		headerId: {
 			type: DataTypes.INTEGER,
 		},
@@ -51,9 +51,7 @@ const Residences = sequelize.define(
 	}
 );
 
-Residences.hasMany(Demographics, {
-	as: "demographics",
-	foreignKey: { name: "residenceId", allowNull: false },
-});
+Residences.hasMany(Demographics);
+Demographics.belongsTo(Residences);
 
 module.exports = Residences;

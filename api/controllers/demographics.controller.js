@@ -6,13 +6,16 @@ const { Op } = require("sequelize");
 const demographicsService = require("../services/demographic.service");
 const { logResidenceHistory } = require("../services/residence.service");
 const Demographics = require("../models/demographics.model");
+const Residences = require("../models/residence.model");
 
 // Created and save a new demographics
 let createDemographics = async (req, res, next) => {
 	try {
 		const { error } = demographicsValidator(req.body);
 		if (error) throw createHttpError(500, error.details[0].message);
-		let { firstname, lastname } = req.body;
+		let { firstname, lastname, residenceId, relationshipWithHeader } =
+			req.body;
+
 		const exist = await Demographics.findOne({
 			where: {
 				firstname,
@@ -20,16 +23,36 @@ let createDemographics = async (req, res, next) => {
 				isDeleted: false,
 			},
 		});
+
 		if (exist) {
 			throw createHttpError(500, "first name exist");
 		}
-		Demographics.create(req.body)
-			.then((data) => {
-				return res.send(createSuccess(data));
-			})
-			.catch((err) => {
-				next(createHttpError(500, err));
+
+		req.body.residenceId = residenceId;
+
+		let demographic = await Demographics.create(req.body);
+
+		if (relationshipWithHeader == 11) {
+			let residence = await Residences.findOne({
+				where: {
+					id: residenceId,
+				},
 			});
+
+			if (residence.headerId) {
+				demographic.isDeleted = true;
+				demographic.save();
+				throw createHttpError(
+					500,
+					`residence id ${residence.id} already had headerId ${residence.headerId}`
+				);
+			} else {
+				residence.headerId = residence.id;
+				residence.save();
+			}
+		}
+
+		return res.send(createSuccess(demographic));
 	} catch (err) {
 		next(err);
 	}
