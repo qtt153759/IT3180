@@ -102,7 +102,7 @@ let getDemographicsInResidence = async (req, res, next) => {
 
 		residence.setDataValue("demographics", demographics);
 
-		return createSuccess(residence);
+		return res.send(createSuccess(residence));
 	} catch (err) {
 		next(err);
 	}

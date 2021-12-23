@@ -58,7 +58,7 @@ const Demographics = sequelize.define(
 			type: DataTypes.STRING,
 		},
 		relationshipWithHeader: {
-			type: DataTypes.STRING,
+			type: DataTypes.INTEGER,
 		},
 		role: {
 			type: DataTypes.STRING,
@@ -68,15 +68,6 @@ const Demographics = sequelize.define(
 			type: DataTypes.INTEGER,
 		},
 		domicile: {
-			type: DataTypes.STRING,
-		},
-		movingAddress: {
-			type: DataTypes.STRING,
-		},
-		movingDate: {
-			type: DataTypes.DATE,
-		},
-		movingNote: {
 			type: DataTypes.STRING,
 		},
 		createdAt: {
