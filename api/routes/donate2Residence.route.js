@@ -9,5 +9,6 @@ route.get("/byDonate/:id", donate2ResidenceController.getDonate2ResidenceByDonat
 route.post("/", donate2ResidenceController.createDonate2Residence);
 route.put("/update",donate2ResidenceController.updateDonate2Residence)
 route.delete("/delete/:id",donate2ResidenceController.deleteDonate2Residence)
-
+route.get("/stats",donate2ResidenceController.getStats)
+route.get("/stats/:id",donate2ResidenceController.getStatsById)
 module.exports = route;
