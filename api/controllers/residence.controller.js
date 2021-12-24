@@ -159,30 +159,41 @@ let moveDemographics = async (req, res, next) => {
 			residence_number,
 		} = req.body;
 
-		const demographics = await Demographics.findAll({
-			where: {
-				residenceId,
-			},
-			include: Residences,
+		let oldResidence = await Residences.findOne({
+			where: { id: residenceId },
+			raw: true,
+			nest: true,
 		});
 
+		if (!oldResidence)
+			throw createHttpError(400, `not found residence id ${residenceId}`);
+
+		delete oldResidence.id;
+		delete oldResidence.createdAt;
+		delete oldResidence.updatedAt;
+		delete oldResidence.isDeleted;
+
 		let residence = await Residences.create({
-			...demographics.residence,
+			...oldResidence,
 			residence_number,
 			headerId: newHeaderId,
 		});
 
-		await Promise.all(
-			demographics
-				.filter((item) => demographicIds.includes(item.id))
-				.map(async (item) => {
-					item.residence_id = residence.id;
-					await item.save();
-				})
+		console.log(oldResidence);
+
+		await Demographics.update(
+			{
+				residence_id: residence.id,
+			},
+			{
+				where: {
+					id: demographicIds,
+					isDeleted: false,
+				},
+			}
 		);
 
-		const id = demographics.residence?.headerId;
-		console.log(id);
+		console.log("new residence", JSON.stringify(residence));
 
 		res.send(createSuccess());
 	} catch (err) {

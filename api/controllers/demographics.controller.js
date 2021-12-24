@@ -14,20 +14,7 @@ let createDemographics = async (req, res, next) => {
 	try {
 		const { error } = demographicsValidator(req.body);
 		if (error) throw createHttpError(500, error.details[0].message);
-		let { firstname, lastname, residenceId, relationshipWithHeader } =
-			req.body;
-
-		const exist = await Demographics.findOne({
-			where: {
-				firstname,
-				lastname,
-				isDeleted: false,
-			},
-		});
-
-		if (exist) {
-			throw createHttpError(500, "first name exist");
-		}
+		let { residenceId, relationshipWithHeader } = req.body;
 
 		req.body.residenceId = residenceId;
 
