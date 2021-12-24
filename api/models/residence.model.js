@@ -51,7 +51,17 @@ const Residences = sequelize.define(
 	}
 );
 
-Residences.hasMany(Demographics);
-Demographics.belongsTo(Residences);
+// Residences.hasMany(Demographics);
+// Demographics.belongsTo(Residences);
+
+Demographics.belongsTo(Residences, {
+	as: "demographics",
+	foreignKey: { name: "residenceId", allowNull: false },
+});
+
+Residences.hasMany(Demographics, {
+	as: "demographics",
+	foreignKey: { name: "residenceId", allowNull: false },
+});
 
 module.exports = Residences;
