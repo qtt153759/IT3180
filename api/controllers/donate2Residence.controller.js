@@ -4,6 +4,7 @@ const Donate = require("../models/donate.model");
 const Donate2Residence = require("../models/donate2Residence.model");
 const Residence = require("../models/residence.model");
 const { Sequelize } = require("sequelize");
+const Demographics = require("../models/demographics.model");
 let getAllDonate2Residence = async (req, res, next) => {
 	try {
 		console.log("vao controller");
@@ -12,7 +13,7 @@ let getAllDonate2Residence = async (req, res, next) => {
 				{
 					model: Donate,
 					as: "donate",
-					attributes: ["name", "description"],
+					attributes: ["name", "description", "fee", "type", "unit"],
 					required: true,
 				},
 			],
@@ -109,7 +110,6 @@ let getStatsById = async (req, res, next) => {
 			nest: true,
 		})
 			.then(async (data) => {
-
 				let maxResidence = await Donate2Residence.findOne({
 					where: { donate_id: id, money: data[0].maxMoney },
 					raw: true,
@@ -141,6 +141,7 @@ let createDonate2Residence = async (req, res, next) => {
 			where: {
 				donate_id: req.body.donate_id,
 				residence_id: req.body.residence_id,
+				isDeleted: false,
 			},
 		});
 		if (exist)
@@ -160,8 +161,37 @@ let createDonate2Residence = async (req, res, next) => {
 		});
 		if (!donateExist) {
 			throw createHttpError(400, "donate is not Exist!");
+		} else {
+			if (donateExist.type === 2) {
+				let { fee, unit } = donateExist;
+				if (unit === 2) {
+					let residence_Number = await Demographics.findAndCountAll({
+						where: {
+							residence_id: req.body.residence_id,
+							isDeleted: false,
+						},
+					});
+					console.log("residence_Number", residence_Number);
+					if (req.body.money !== fee * residence_Number.count) {
+						throw createHttpError(
+							400,
+							`Cần đóng cho ${
+								residence_Number.count
+							} với 1 người cần ${fee} => tổng ${
+								fee * residence_Number.count
+							}`
+						);
+					}
+				} else {
+					if (req.body.money !== fee) {
+						throw createHttpError(
+							400,
+							`Cần đóng cho 1 hộ là ${fee} `
+						);
+					}
+				}
+			}
 		}
-
 		const data = await Donate2Residence.create(req.body);
 
 		return res.send(createSuccess(data));

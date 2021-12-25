@@ -18,6 +18,19 @@ const Donate = sequelize.define(
 		description: {
 			type: DataTypes.STRING(255),
 		},
+		type: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+		},
+		unit: {
+			type: DataTypes.INTEGER,
+			defaultValue: 1,
+		},
+		fee: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			defaultValue: 0,
+		},
 		createdAt: {
 			allowNull: false,
 			type: DataTypes.DATE,
