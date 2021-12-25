@@ -71,7 +71,7 @@ let updateResidence = async (req, res, next) => {
 
 		let id = req.body.id;
 
-		let updatedField = req.body;
+		let updatedResidence = req.body;
 
 		let residence = await Residences.findOne({
 			where: {
@@ -82,48 +82,63 @@ let updateResidence = async (req, res, next) => {
 			include: Demographics,
 		});
 
-		if (updatedField.headerId) {
+		if (updatedResidence.headerId) {
 			const newHeader = await residence.demographics.find(
-				(item) => item.id == updatedField.headerId && !item.isDeleted
+				(item) =>
+					item.id == updatedResidence.headerId && !item.isDeleted
 			);
 
 			if (!newHeader)
 				throw createHttpError(
-					`not found header id ${updatedField.headerId} in residence id ${id}`
+					`not found header id ${updatedResidence.headerId} in residence id ${id}`
 				);
 
 			const OldHeader = await residence.demographics.find(
 				(item) => item.relationshipWithHeader == relationship.CHU_HO
 			);
 
-			await Demographics.update(
-				{
-					relationshipWithHeader: newHeader.relationshipWithHeader,
-				},
-				{
-					where: {
-						id: OldHeader.id,
+			await Promise.all([
+				Demographics.update(
+					{
+						relationshipWithHeader:
+							newHeader.relationshipWithHeader,
 					},
-				}
-			);
-
-			updatedField.relationshipWithHeader = relationship.CHU_HO;
+					{
+						where: {
+							id: OldHeader.id,
+						},
+					}
+				),
+				Demographics.update(
+					{
+						relationshipWithHeader: 11,
+					},
+					{
+						where: {
+							id: newHeader.id,
+						},
+					}
+				),
+			]);
 		}
 
 		logResidenceHistory({
 			residenceId: id,
-			demographicId: updatedField.headerId,
-			address: updatedField.address,
-			note: updatedField.note,
+			demographicId: updatedResidence.headerId,
+			address: updatedResidence.address,
+			note: updatedResidence.note,
 		});
 
 		if (!residence) {
 			throw Error(`Residence not updated. id: ${id}`);
 		}
 
-		delete updatedField.id;
-		delete updatedField.demographicId;
-		residence.set(updatedField);
+		delete updatedResidence.id;
+		delete updatedResidence.demographicId;
+
+		console.log("updatedField", updatedResidence);
+
+		residence.set(updatedResidence);
 
 		await residence.save();
 

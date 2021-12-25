@@ -6,37 +6,35 @@ const salt = bcrypt.genSaltSync(10);
 let handleUserLogin = (dataLogin) => {
 	return new Promise(async (resolve, reject) => {
 		try {
-			const password = dataLogin.password;
-			const email = dataLogin.email;
-			let userData = {};
-			let isExsit = await checkUserEmail(email);
-			if (isExsit) {
-				let user = await Account.findOne({
-					attributes: ["email", "role", "password", "demographic_id"], //select
-					where: { email: email },
-					raw: true,
-				});
-				if (user) {
-					let check = await bcrypt.compareSync(
-						password,
-						user.password
-					);
-					if (check) {
-						userData.errMessage = "Login successful";
-						delete user.password; //sau khi attributes ma muon an thuoc tinh nao thi delete
-						userData.user = user;
-					} else {
-						throw createError(500, "wrong password");
-					}
-				} else {
-					throw createError(500, "user not found");
-				}
-			} else {
+			const { email, password } = dataLogin;
+			const isExsit = await checkUserEmail(email);
+			if (!isExsit) {
 				throw createError(500, "your email isn't exsist");
 			}
-			resolve(userData);
-		} catch (er) {
-			reject(er);
+
+			let user = await Account.findOne({
+				attributes: ["email", "role", "password", "demographic_id"], //select
+				where: { email },
+				raw: true,
+			});
+
+			if (!user) {
+				throw createError(500, "user not found");
+			}
+
+			let correctPassword = await bcrypt.compareSync(
+				password,
+				user.password
+			);
+
+			if (!correctPassword) {
+				throw createError(500, "wrong password");
+			}
+
+			delete user.password; //sau khi attributes ma muon an thuoc tinh nao thi delete
+			resolve(user);
+		} catch (err) {
+			reject(err);
 		}
 	});
 };
@@ -85,7 +83,6 @@ let checkUserEmail = async (userEmail) => {
 		}
 	});
 };
-
 
 let hashUserPassword = (password) => {
 	return new Promise(async (resolve, reject) => {
