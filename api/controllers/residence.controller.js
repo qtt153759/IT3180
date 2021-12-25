@@ -7,6 +7,7 @@ const ResidenceHistory = require("../models/residenceHistory.model");
 
 const { logResidenceHistory } = require("../services/residence.service");
 const residenceChange = require("../constance/residenceChange");
+const relationship = require("../constance/relationship");
 // Created and save a new residence
 let create = async (req, res, next) => {
 	try {
@@ -82,13 +83,31 @@ let updateResidence = async (req, res, next) => {
 		});
 
 		if (updatedField.headerId) {
-			const exist = await residence.demographics.find(
-				(item) => item.id == updatedField.headerId
+			const newHeader = await residence.demographics.find(
+				(item) => item.id == updatedField.headerId && !item.isDeleted
 			);
-			if (!exist)
+
+			if (!newHeader)
 				throw createHttpError(
 					`not found header id ${updatedField.headerId} in residence id ${id}`
 				);
+
+			const OldHeader = residence.demographics.find(
+				(item) => item.relationshipWithHeader == relationship.CHU_HO
+			);
+
+			await Demographics.update(
+				{
+					relationshipWithHeader: newHeader.relationshipWithHeader,
+				},
+				{
+					where: {
+						id: OldHeader.id,
+					},
+				}
+			);
+
+			updatedField.residenceId = relationship.CHU_HO;
 		}
 
 		logResidenceHistory({

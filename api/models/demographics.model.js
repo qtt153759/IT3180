@@ -94,7 +94,5 @@ const Demographics = sequelize.define(
 	}
 );
 
-// Demographics.hasOne(Account);
-// Account.belongsTo(Demographics);
 
 module.exports = Demographics;
