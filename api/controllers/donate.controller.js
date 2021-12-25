@@ -5,7 +5,11 @@ const Donate2Residence = require("../models/donate2Residence.model");
 let getDonate = async (req, res, next) => {
 	try {
 		console.log("vao controller");
-		await Donate.findAll()
+		let condition = {};
+		if (req.query.type) {
+			condition.type = req.query.type;
+		}
+		await Donate.findAll({ where: condition })
 			.then((data) => {
 				res.send(createSuccess(data));
 			})
@@ -19,8 +23,20 @@ let getDonate = async (req, res, next) => {
 let createDonate = async (req, res, next) => {
 	try {
 		console.log("vao controller create");
-		if (!req.body || !req.body.name || !req.body.description) {
+		if (
+			!req.body ||
+			!req.body.name ||
+			!req.body.description ||
+			!req.body.type
+		) {
 			throw createHttpError(400, "body missing field!");
+		}
+		if (
+			req.body.type === 2 &&
+			(!req.body.fee || !req.body.unit) &&
+			req.body.fee > 0
+		) {
+			throw createHttpError(400, "phí thiếu tiền và unit!");
 		}
 		console.log(req.body);
 		const exist = await Donate.findOne({
