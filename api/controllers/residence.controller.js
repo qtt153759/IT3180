@@ -92,7 +92,7 @@ let updateResidence = async (req, res, next) => {
 					`not found header id ${updatedField.headerId} in residence id ${id}`
 				);
 
-			const OldHeader = residence.demographics.find(
+			const OldHeader = await residence.demographics.find(
 				(item) => item.relationshipWithHeader == relationship.CHU_HO
 			);
 
