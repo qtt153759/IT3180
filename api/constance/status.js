@@ -1,7 +1,7 @@
 module.exports = {
-	1: "Bình thường",
-	2: "Mới sinh",
-	3: "Lấy chồng vợ",
-	4: "Tạm vắng",
-	5: "Tạm trú",
+	BINH_THUONG: 1,
+	MOI_SINH: 2,
+	LAY_CHONG_VO: 3,
+	TAM_VANG: 4,
+	TAM_TRU: 5,
 };

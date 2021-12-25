@@ -8,26 +8,14 @@ const { logResidenceHistory } = require("../services/residence.service");
 const Demographics = require("../models/demographics.model");
 const Residences = require("../models/residence.model");
 const relationship = require("../constance/relationship");
+const residence_change = require("../constance/residenceChange");
 
 // Created and save a new demographics
 let createDemographics = async (req, res, next) => {
 	try {
 		const { error } = demographicsValidator(req.body);
 		if (error) throw createHttpError(500, error.details[0].message);
-		let { firstname, lastname, residenceId, relationshipWithHeader } =
-			req.body;
-
-		const exist = await Demographics.findOne({
-			where: {
-				firstname,
-				lastname,
-				isDeleted: false,
-			},
-		});
-
-		if (exist) {
-			throw createHttpError(500, "first name exist");
-		}
+		let { residenceId, relationshipWithHeader } = req.body;
 
 		req.body.residenceId = residenceId;
 
@@ -280,10 +268,11 @@ let updateDemographicStatus = async (req, res, next) => {
 
 		if (oldStatus != status) {
 			await logResidenceHistory({
-				fromType: oldStatus,
-				toType: status,
+				fromStatus: oldStatus,
+				toStatus: status,
 				demographicId: demographic.id,
 				residenceId: demographic.residenceId,
+				type: residence_change.NHAN_KHAU_STATUS,
 			});
 		}
 

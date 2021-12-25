@@ -1,0 +1,6 @@
+module.exports = {
+	CHU_HO: 1,
+	NHAN_KHAU_STATUS: 2,
+	NHAN_KHAU_CHUYEN_DI: 3,
+	NHAN_KHAU_CHUYEN_DEN: 4,
+};

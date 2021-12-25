@@ -17,16 +17,4 @@ const sequelize = new Sequelize(
 	}
 );
 
-// db.fee = require("./fee.model")(sequelize);
-// db.fee2Residence = require("./fee2Residence.model")(sequelize);
-// db.demographic = require("./demographics.model")(sequelize);
-// db.residence = require("./residence.model")(sequelize);
-// db.account = require("./account.model")(sequelize);
-// db.nation = require("./nation.model")(sequelize);
-
-// db.fee2Residence.belongsTo(db.fee, { foreignKey: "fee_id" });
-// db.fee.hasOne(db.fee2Residence, { foreignKey: "fee_id" });
-
-// db.demographic.belongsTo(db.nation, { foreignKey: "nation" });
-// db.nation.hasOne(db.demographic, { foreignKey: "nation" });
 module.exports = sequelize;

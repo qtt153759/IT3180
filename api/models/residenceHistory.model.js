@@ -18,7 +18,6 @@ const ResidenceHistory = sequelize.define(
 		},
 		demographicId: {
 			type: DataTypes.INTEGER,
-			allowNull: false,
 		},
 		fromDate: {
 			type: DataTypes.DATE,
@@ -32,10 +31,13 @@ const ResidenceHistory = sequelize.define(
 		note: {
 			type: DataTypes.STRING(255),
 		},
-		fromType: {
+		fromStatus: {
 			type: DataTypes.INTEGER,
 		},
-		toType: {
+		toStatus: {
+			type: DataTypes.INTEGER,
+		},
+		type: {
 			type: DataTypes.INTEGER,
 		},
 		createdAt: {
