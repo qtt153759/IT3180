@@ -81,7 +81,10 @@ let updateResidence = async (req, res, next) => {
 			throw Error(`Residence not updated. id: ${id}`);
 		}
 
-		residence = updatedField;
+		delete updatedField.id;
+		delete updatedField.demographicId;
+		residence.set(updatedField);
+
 		await residence.save();
 
 		res.send(createSuccess(residence));

@@ -11,10 +11,6 @@ const Account = sequelize.define(
 			autoIncrement: true,
 			primaryKey: true,
 		},
-		demographic_id: {
-			type: DataTypes.STRING(255),
-			allowNull: false,
-		},
 		role: {
 			type: DataTypes.INTEGER,
 			allowNull: false,
