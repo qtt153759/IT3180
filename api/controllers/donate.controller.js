@@ -5,7 +5,7 @@ const Donate2Residence = require("../models/donate2Residence.model");
 let getDonate = async (req, res, next) => {
 	try {
 		console.log("vao controller");
-		let condition = {};
+		let condition = { isDeleted: false };
 		if (req.query.type) {
 			condition.type = req.query.type;
 		}
@@ -23,24 +23,20 @@ let getDonate = async (req, res, next) => {
 let createDonate = async (req, res, next) => {
 	try {
 		console.log("vao controller create");
-		if (
-			!req.body ||
-			!req.body.name ||
-			!req.body.description ||
-			!req.body.type
-		) {
+		if (!req.body || !req.body.name || !req.body.type) {
 			throw createHttpError(400, "body missing field!");
 		}
+		//Nếu là thu phí thì buộc phải có fee
+		console.log(req.body);
 		if (
 			req.body.type === 2 &&
-			(!req.body.fee || !req.body.unit) &&
-			req.body.fee > 0
+			!(req.body.fee && req.body.unit && req.body.fee > 0)
 		) {
 			throw createHttpError(400, "phí thiếu tiền và unit!");
 		}
-		console.log(req.body);
+		//Nếu phí đấy tồn tại r
 		const exist = await Donate.findOne({
-			where: { name: req.body.name },
+			where: { name: req.body.name, isDeleted: false },
 		});
 		if (exist) throw createHttpError(400, "Dupicate name of Donate");
 
@@ -53,26 +49,29 @@ let createDonate = async (req, res, next) => {
 };
 let updateDonate = async (req, res, next) => {
 	try {
-		let { id } = req.body;
-		if (!id) {
-			throw createHttpError(400, "Missing 'id' field");
+		if (!req.body || !req.body.id || !req.body.name || !req.body.type) {
+			throw createHttpError(400, "body missing field!");
 		}
+		if (
+			req.body.type === 2 &&
+			!(req.body.fee && req.body.unit && req.body.fee > 0)
+		) {
+			throw createHttpError(400, "phí thiếu tiền và unit!");
+		}
+
 		Donate.update(req.body, {
-			where: {
-				id: id,
-				isDeleted: false,
-			},
+			where: { id: req.body.id, isDeleted: false },
 		})
 			.then(async () => {
-				Donate.findOne({
-					where: { id },
-				})
-					.then((data) => {
-						return res.send(createSuccess(data));
-					})
-					.catch((err) => {
-						throw createHttpError(500, err);
-					});
+				let data = await Donate.findOne({
+					where: { id: req.body.id },
+					raw: true,
+				});
+				if (data) {
+					return res.send(createSuccess(data));
+				} else {
+					throw createHttpError(400, "error");
+				}
 			})
 			.catch((err) => {
 				next(createHttpError(500, err));
