@@ -5,6 +5,7 @@ const userValidator = (data) => {
 		email: Joi.string().lowercase().email().required(),
 		password: Joi.string().min(4).max(32).required(),
 	}).unknown(true);
+	
 	return userSchema.validate(data);
 };
 

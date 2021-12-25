@@ -107,7 +107,7 @@ let updateResidence = async (req, res, next) => {
 				}
 			);
 
-			updatedField.residenceId = relationship.CHU_HO;
+			updatedField.relationshipWithHeader = relationship.CHU_HO;
 		}
 
 		logResidenceHistory({

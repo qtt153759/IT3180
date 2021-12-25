@@ -68,6 +68,7 @@ let createUserAccount = (dataRegister) => {
 		}
 	});
 };
+
 let checkUserEmail = async (userEmail) => {
 	return new Promise(async (resolve, reject) => {
 		try {
@@ -84,6 +85,8 @@ let checkUserEmail = async (userEmail) => {
 		}
 	});
 };
+
+
 let hashUserPassword = (password) => {
 	return new Promise(async (resolve, reject) => {
 		try {
