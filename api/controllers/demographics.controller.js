@@ -8,6 +8,7 @@ const { logResidenceHistory } = require("../services/residence.service");
 const Demographics = require("../models/demographics.model");
 const Residences = require("../models/residence.model");
 const relationship = require("../constance/relationship");
+const residence_change = require("../constance/residenceChange");
 
 // Created and save a new demographics
 let createDemographics = async (req, res, next) => {
@@ -267,10 +268,11 @@ let updateDemographicStatus = async (req, res, next) => {
 
 		if (oldStatus != status) {
 			await logResidenceHistory({
-				fromType: oldStatus,
-				toType: status,
+				fromStatus: oldStatus,
+				toStatus: status,
 				demographicId: demographic.id,
 				residenceId: demographic.residenceId,
+				type: residence_change.NHAN_KHAU_STATUS,
 			});
 		}
 

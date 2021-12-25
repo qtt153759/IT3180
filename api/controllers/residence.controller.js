@@ -5,6 +5,7 @@ const Residences = require("../models/residence.model");
 const Demographics = require("../models/demographics.model");
 const ResidenceHistory = require("../models/residenceHistory.model");
 
+const { logResidenceHistory } = require("../services/residence.service");
 // Created and save a new residence
 let create = async (req, res, next) => {
 	try {
@@ -75,6 +76,25 @@ let updateResidence = async (req, res, next) => {
 				id,
 				isDeleted: false,
 			},
+
+			include: Demographics,
+		});
+
+		if (updatedField.headerId) {
+			const exist = await residence.demographics.find(
+				(item) => item.id == updatedField.headerId
+			);
+			if (!exist)
+				throw createHttpError(
+					`not found header id ${updatedField.headerId} in residence id ${id}`
+				);
+		}
+
+		logResidenceHistory({
+			residenceId: id,
+			demographicId: updatedField.headerId,
+			address: updatedField.address,
+			note: updatedField.note,
 		});
 
 		if (!residence) {
