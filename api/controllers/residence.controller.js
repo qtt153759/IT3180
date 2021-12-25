@@ -6,6 +6,7 @@ const Demographics = require("../models/demographics.model");
 const ResidenceHistory = require("../models/residenceHistory.model");
 
 const { logResidenceHistory } = require("../services/residence.service");
+const residenceChange = require("../constance/residenceChange");
 // Created and save a new residence
 let create = async (req, res, next) => {
 	try {
@@ -161,13 +162,11 @@ let getResidenceChange = async (req, res, next) => {
 	try {
 		const id = req.params.id;
 		if (!id) throw createHttpError(400, "id not found");
-		const residenceChange = await ResidenceHistory.findAndCountAll({
+		const change = await ResidenceHistory.findAndCountAll({
 			where: { isDeleted: false, residenceId: id },
 		});
 
-		return res.send(
-			createSuccess(residenceChange.rows, residenceChange.count)
-		);
+		return res.send(createSuccess(change.rows, change.count));
 	} catch (err) {
 		next(err);
 	}
@@ -176,20 +175,23 @@ let getResidenceChange = async (req, res, next) => {
 let moveDemographics = async (req, res, next) => {
 	try {
 		const {
-			residence_id: residenceId,
+			residence_id: oldResidenceId,
 			demographic_ids: demographicIds,
 			new_header_id: newHeaderId,
 			residence_number,
 		} = req.body;
 
 		let oldResidence = await Residences.findOne({
-			where: { id: residenceId },
+			where: { id: oldResidenceId },
 			raw: true,
 			nest: true,
 		});
 
 		if (!oldResidence)
-			throw createHttpError(400, `not found residence id ${residenceId}`);
+			throw createHttpError(
+				400,
+				`not found residence id ${oldResidenceId}`
+			);
 
 		delete oldResidence.id;
 		delete oldResidence.createdAt;
@@ -214,6 +216,19 @@ let moveDemographics = async (req, res, next) => {
 			}
 		);
 
+		for (let id in demographicIds) {
+			logResidenceHistory({
+				residenceId: oldResidenceId,
+				demographicId: id,
+				type: residenceChange.NHAN_KHAU_CHUYEN_DI,
+			});
+
+			logResidenceHistory({
+				residenceId: residence.id,
+				demographicId: id,
+				type: residenceChange.NHAN_KHAU_CHUYEN_DEN,
+			});
+		}
 		res.send(createSuccess());
 	} catch (err) {
 		next(err);
@@ -238,10 +253,22 @@ let moveSingleDemographics = async (req, res, next) => {
 				400,
 				`not found demographic id ${demographicId}`
 			);
-
+		const oldResidenceId = demographic.residenceId;
 		demographic.residenceId = newResidenceId;
 
 		await demographic.save();
+
+		logResidenceHistory({
+			demographicId,
+			residenceId: oldResidenceId,
+			type: residenceChange.NHAN_KHAU_CHUYEN_DI,
+		});
+
+		logResidenceHistory({
+			demographicId,
+			residenceId: newResidenceId,
+			type: residenceChange.NHAN_KHAU_CHUYEN_DEN,
+		});
 
 		return res.send(createSuccess(demographic));
 	} catch (err) {
