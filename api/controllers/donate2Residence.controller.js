@@ -3,7 +3,7 @@ const createSuccess = require("../helpers/respose.success");
 const Donate = require("../models/donate.model");
 const Donate2Residence = require("../models/donate2Residence.model");
 const Residence = require("../models/residence.model");
-const { Sequelize } = require("sequelize");
+const { Sequelize, Op } = require("sequelize");
 const Demographics = require("../models/demographics.model");
 let getAllDonate2Residence = async (req, res, next) => {
 	try {
@@ -41,7 +41,7 @@ let getDonate2ResidenceByResidence = async (req, res, next) => {
 				{
 					model: Donate,
 					as: "donate",
-					attributes: ["name", "description"],
+					attributes: ["name", "description", "fee", "type", "unit"],
 					required: true,
 				},
 			],
@@ -52,6 +52,39 @@ let getDonate2ResidenceByResidence = async (req, res, next) => {
 			.catch((err) => {
 				next(createHttpError(500, err));
 			});
+	} catch (err) {
+		next(err);
+	}
+};
+let getResidenceByDonate = async (req, res, next) => {
+	try {
+		if (!req.params.id) {
+			throw createHttpError(400, "params missing donate!");
+		}
+		let id = req.params.id;
+		let condition = { isDeleted: false };
+		let idList = [];
+		let data;
+		let donate2Residence = await Donate2Residence.findAll({
+			where: { donate_id: id, isDeleted: false },
+			raw: true,
+		});
+		for (let i = 0; i < donate2Residence.length; i++) {
+			idList.push(donate2Residence[i].residence_id);
+		}
+		console.log("idlist", idList);
+		if (+req.query.type === 2) {
+			condition = { id: { [Op.notIn]: idList } };
+			data = await Residence.findAndCountAll({
+				where: condition,
+			});
+		} else {
+			condition = { id: { [Op.in]: idList } };
+			data = await Residence.findAndCountAll({
+				where: condition,
+			});
+		}
+		res.send(createSuccess(data.rows, data.count));
 	} catch (err) {
 		next(err);
 	}
@@ -59,69 +92,28 @@ let getDonate2ResidenceByResidence = async (req, res, next) => {
 let getDonate2ResidenceByDonate = async (req, res, next) => {
 	try {
 		if (!req.params.id) {
-			throw createHttpError(400, "params missing residence_id!");
+			throw createHttpError(400, "params missing donate!");
 		}
 		let id = req.params.id;
+		let condition = { isDeleted: false };
+		if (+req.query.type === 2) {
+			condition = { donate_id: { [Op.ne]: id } };
+		} else {
+			condition = { donate_id: id };
+		}
 		await Donate2Residence.findAll({
-			where: { donate_id: id, isDeleted: false },
+			where: condition,
 			include: [
 				{
 					model: Donate,
 					as: "donate",
-					attributes: ["name", "description"],
+					attributes: ["name", "description", "type", "fee", "unit"],
 					required: true,
 				},
 			],
 		})
 			.then((data) => {
 				res.send(createSuccess(data));
-			})
-			.catch((err) => {
-				next(createHttpError(500, err));
-			});
-	} catch (err) {
-		next(err);
-	}
-};
-let getStatsById = async (req, res, next) => {
-	try {
-		let page = parseInt(req.query.page) || 1;
-		let limit = parseInt(req.query.limit) || 10;
-		let { id } = req.params;
-		Donate2Residence.findAll({
-			where: { isDeleted: false, donate_id: id },
-			limit: limit,
-			offset: (page - 1) * limit,
-			attributes: [
-				"donate_id",
-				[
-					Sequelize.fn("COUNT", Sequelize.col("residence_id")),
-					"countResidence",
-				],
-				[Sequelize.fn("SUM", Sequelize.col("money")), "sumMoney"],
-				[Sequelize.fn("MAX", Sequelize.col("money")), "maxMoney"],
-			],
-			include: [
-				{
-					model: Donate,
-					as: "donate",
-				},
-			],
-			raw: true,
-			nest: true,
-		})
-			.then(async (data) => {
-				let maxResidence = await Donate2Residence.findOne({
-					where: {
-						donate_id: id,
-						money: data[0].maxMoney,
-						isDeleted: false,
-					},
-					raw: true,
-					nest: true,
-				});
-				data[0] = { ...data[0], maxResidence };
-				res.send(data[0]);
 			})
 			.catch((err) => {
 				next(createHttpError(500, err));
@@ -316,11 +308,61 @@ let deleteDonate2Residence = async (req, res, next) => {
 		next(err);
 	}
 };
+let getStatsById = async (req, res, next) => {
+	try {
+		let page = parseInt(req.query.page) || 1;
+		let limit = parseInt(req.query.limit) || 10;
+		let { id } = req.params;
+		Donate2Residence.findAll({
+			where: { isDeleted: false, donate_id: id },
+			limit: limit,
+			offset: (page - 1) * limit,
+			attributes: [
+				"donate_id",
+				[
+					Sequelize.fn("COUNT", Sequelize.col("residence_id")),
+					"countResidence",
+				],
+				[Sequelize.fn("SUM", Sequelize.col("money")), "sumMoney"],
+				[Sequelize.fn("MAX", Sequelize.col("money")), "maxMoney"],
+			],
+			include: [
+				{
+					model: Donate,
+					as: "donate",
+				},
+			],
+			raw: true,
+			nest: true,
+		})
+			.then(async (data) => {
+				let residence = await Residence.findAndCountAll({
+					where: { isDeleted: false },
+				});
+				let residenceNumber = residence.count;
+				let maxResidence = await Donate2Residence.findOne({
+					where: {
+						donate_id: id,
+						money: data[0].maxMoney,
+						isDeleted: false,
+					},
+					raw: true,
+					nest: true,
+				});
+				data[0] = { ...data[0], maxResidence, residenceNumber };
+				res.send(createSuccess(data[0]));
+			})
+			.catch((err) => {
+				next(createHttpError(500, err));
+			});
+	} catch (err) {
+		next(err);
+	}
+};
 let getStats = async (req, res, next) => {
 	try {
 		let page = parseInt(req.query.page) || 1;
 		let limit = parseInt(req.query.limit) || 10;
-
 		Donate2Residence.findAndCountAll({
 			where: { isDeleted: false },
 			limit: limit,
@@ -331,14 +373,8 @@ let getStats = async (req, res, next) => {
 					Sequelize.fn("COUNT", Sequelize.col("residence_id")),
 					"countResidence",
 				],
-				[
-					Sequelize.fn("SUM", Sequelize.col("money")),
-					"sumMoney",
-				],
-				[
-					Sequelize.fn("MAX", Sequelize.col("money")),
-					"maxMoney",
-				],
+				[Sequelize.fn("SUM", Sequelize.col("money")), "sumMoney"],
+				[Sequelize.fn("MAX", Sequelize.col("money")), "maxMoney"],
 			],
 			include: [
 				{
@@ -367,4 +403,5 @@ module.exports = {
 	getDonate2ResidenceByDonate,
 	getStats,
 	getStatsById,
+	getResidenceByDonate,
 };
