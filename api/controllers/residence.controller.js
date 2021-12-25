@@ -216,7 +216,7 @@ let moveDemographics = async (req, res, next) => {
 			}
 		);
 
-		for (let id in demographicIds) {
+		for (const id in demographicIds) {
 			logResidenceHistory({
 				residenceId: oldResidenceId,
 				demographicId: id,
