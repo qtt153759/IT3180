@@ -329,15 +329,15 @@ let getStats = async (req, res, next) => {
 				"donate_id",
 				[
 					Sequelize.fn("COUNT", Sequelize.col("residence_id")),
-					"Số lượng họ đóng góp",
+					"countResidence",
 				],
 				[
 					Sequelize.fn("SUM", Sequelize.col("money")),
-					"Số tiền đóng góp",
+					"sumMoney",
 				],
 				[
 					Sequelize.fn("MAX", Sequelize.col("money")),
-					"Số tiền đóng góp lớn nhất từ một hộ ",
+					"maxMoney",
 				],
 			],
 			include: [
