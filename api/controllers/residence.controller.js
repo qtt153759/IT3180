@@ -250,6 +250,18 @@ let moveDemographics = async (req, res, next) => {
 			}
 		);
 
+		await Demographics.update(
+			{
+				relationshipWithHeader: relationship.CHU_HO,
+			},
+			{
+				where: {
+					id: newHeaderId,
+					isDeleted: false,
+				},
+			}
+		);
+
 		for (const id in demographicIds) {
 			logResidenceHistory({
 				residenceId: oldResidenceId,
