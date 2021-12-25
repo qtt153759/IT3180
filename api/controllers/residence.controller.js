@@ -179,11 +179,9 @@ let moveDemographics = async (req, res, next) => {
 			headerId: newHeaderId,
 		});
 
-		console.log(oldResidence);
-
 		await Demographics.update(
 			{
-				residence_id: residence.id,
+				residenceId: residence.id,
 			},
 			{
 				where: {
@@ -193,9 +191,36 @@ let moveDemographics = async (req, res, next) => {
 			}
 		);
 
-		console.log("new residence", JSON.stringify(residence));
-
 		res.send(createSuccess());
+	} catch (err) {
+		next(err);
+	}
+};
+
+let moveSingleDemographics = async (req, res, next) => {
+	try {
+		const {
+			demographic_id: demographicId,
+			to_residence_id: newResidenceId,
+		} = req.body;
+
+		let demographic = await Demographics.findOne({
+			where: {
+				id: demographicId,
+			},
+		});
+
+		if (!demographic)
+			throw createHttpError(
+				400,
+				`not found demographic id ${demographicId}`
+			);
+
+		demographic.residenceId = newResidenceId;
+
+		await demographic.save();
+
+		return res.send(createSuccess(demographic));
 	} catch (err) {
 		next(err);
 	}
@@ -210,4 +235,5 @@ module.exports = {
 	getDemographicsInResidence,
 	getResidenceChange,
 	moveDemographics,
+	moveSingleDemographics,
 };

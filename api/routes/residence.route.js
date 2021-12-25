@@ -18,5 +18,6 @@ route.get("/:id/demographics", residenceController.getDemographicsInResidence);
 route.get("/change", residenceController.getResidenceChange);
 
 route.post("/move", residenceController.moveDemographics);
+route.post("/move-single", residenceController.moveSingleDemographics);
 
 module.exports = route;
