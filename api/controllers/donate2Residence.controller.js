@@ -183,15 +183,16 @@ let createDonate2Residence = async (req, res, next) => {
 				console.log("residence_Number", residence_Number);
 			} else if (unit === 1) {
 				//nếu theo hộ thì lấy luôn số fee làm tiền đóng money
-				if (req.body.money !== fee) {
-					throw createHttpError(400, `Cần đóng cho 1 hộ là ${fee} `);
-				}
 				money = fee;
 			}
 		}
 		//nếu là donate thì phải check xem tiền có âm không
-		else if (donateExist.type === 1 && req.body.money < 0) {
-			throw createHttpError(400, "money must be positive!");
+		else if (donateExist.type === 1) {
+			if (!req.body.money) {
+				throw createHttpError(400, "missing money when donate");
+			} else if (req.body.money <= 0) {
+				throw createHttpError(400, "money must be positive");
+			}
 		}
 
 		const data = await Donate2Residence.create({
@@ -246,15 +247,16 @@ let updateDonate2Residence = async (req, res, next) => {
 				console.log("residence_Number", residence_Number);
 			} else if (unit === 1) {
 				//nếu theo hộ thì lấy luôn số fee làm tiền đóng money
-				if (req.body.money !== fee) {
-					throw createHttpError(400, `Cần đóng cho 1 hộ là ${fee} `);
-				}
 				money = fee;
 			}
 		}
 		//nếu là donate thì phải check xem tiền có âm không
-		else if (donateExist.type === 1 && req.body.money < 0) {
-			throw createHttpError(400, "money must be positive!");
+		else if (donateExist.type === 1) {
+			if (!req.body.money) {
+				throw createHttpError(400, "missing money when donate");
+			} else if (req.body.money <= 0) {
+				throw createHttpError(400, "money must be positive");
+			}
 		}
 
 		Donate2Residence.update(
