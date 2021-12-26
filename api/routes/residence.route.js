@@ -6,12 +6,7 @@ const author = require("../middlewares/author");
 const role = require("../constance/role");
 
 // get thay đổi của hộ khẩu
-route.get(
-	"/change/:id",
-	authen,
-	author([role.CAN_BO_1]),
-	residenceController.getResidenceChange
-);
+route.get("/change/:id", residenceController.getResidenceChange);
 
 route.get("/", residenceController.getAll);
 route.get("/:id", residenceController.getResidenceById);

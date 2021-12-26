@@ -30,8 +30,16 @@ let getAll = (req, res, next) => {
 		let page = parseInt(req.query.page) || 1;
 		let limit = parseInt(req.query.limit) || 10;
 
+		let where = {
+			isDeleted: false,
+		};
+
+		if (req.query.number) {
+			where.residence_number = req.query.number;
+		}
+
 		Residences.findAndCountAll({
-			where: { isDeleted: false },
+			where,
 			limit: limit,
 			offset: (page - 1) * limit,
 		})
