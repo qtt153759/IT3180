@@ -294,6 +294,10 @@ let moveSingleDemographics = async (req, res, next) => {
 			},
 		});
 
+		if (demographic.relationshipWithHeader == relationship.CHU_HO) {
+			throw createHttpError(400, `${demographicId} is header`);
+		}
+
 		if (!demographic)
 			throw createHttpError(
 				400,
