@@ -19,11 +19,4 @@ route.get(
 route.post("/", donate2ResidenceController.createDonate2Residence);
 route.put("/update", donate2ResidenceController.updateDonate2Residence);
 route.delete("/delete/:id", donate2ResidenceController.deleteDonate2Residence);
-route.get("/byDonateStats", donate2ResidenceController.getDonateStats);
-route.get("/byDonateStats/:id", donate2ResidenceController.getDonateStatsById);
-route.get(
-	"/byResidenceStats/:id",
-	donate2ResidenceController.getResidenceStatsById
-);
-route.get("/byResidenceStats", donate2ResidenceController.getResidenceStats);
 module.exports = route;

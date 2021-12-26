@@ -12,6 +12,7 @@ const AddressRoute = require("./routes/address.route");
 const AccountRoute = require("./routes/account.route");
 const DonateRoute = require("./routes/donate.route");
 const Donate2ResidenceRoute = require("./routes/donate2Residence.route");
+const Donate2ResidenceRouteStats = require("./routes/donate2ResidenceStats.route");
 const NationRoute = require("./routes/nation.route");
 const AbsentStayRoute = require("./routes/absentStay.route");
 
@@ -39,6 +40,7 @@ app.use("/api/address", AddressRoute);
 app.use("/api/account", AccountRoute);
 app.use("/api/donate", DonateRoute);
 app.use("/api/donate2Residence", Donate2ResidenceRoute);
+app.use("/api/donate2ResidenceStats", Donate2ResidenceRouteStats);
 app.use("/api/nation", NationRoute);
 app.use("/api/absentStay", AbsentStayRoute);
 app.use((req, res, next) => {
