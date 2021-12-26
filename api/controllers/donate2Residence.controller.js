@@ -308,7 +308,7 @@ let deleteDonate2Residence = async (req, res, next) => {
 		next(err);
 	}
 };
-let getStatsById = async (req, res, next) => {
+let getDonateStatsById = async (req, res, next) => {
 	try {
 		let page = parseInt(req.query.page) || 1;
 		let limit = parseInt(req.query.limit) || 10;
@@ -339,7 +339,7 @@ let getStatsById = async (req, res, next) => {
 				let residence = await Residence.findAndCountAll({
 					where: { isDeleted: false },
 				});
-				let residenceNumber = residence.count;
+				let totalResidence = residence.count;
 				let maxResidence = await Donate2Residence.findOne({
 					where: {
 						donate_id: id,
@@ -349,7 +349,7 @@ let getStatsById = async (req, res, next) => {
 					raw: true,
 					nest: true,
 				});
-				data[0] = { ...data[0], maxResidence, residenceNumber };
+				data[0] = { ...data[0], maxResidence, totalResidence };
 				res.send(createSuccess(data[0]));
 			})
 			.catch((err) => {
@@ -359,7 +359,58 @@ let getStatsById = async (req, res, next) => {
 		next(err);
 	}
 };
-let getStats = async (req, res, next) => {
+let getResidenceStatsById = async (req, res, next) => {
+	try {
+		let page = parseInt(req.query.page) || 1;
+		let limit = parseInt(req.query.limit) || 10;
+		let { id } = req.params;
+		Donate2Residence.findAll({
+			where: { isDeleted: false, residence_id: id },
+			limit: limit,
+			offset: (page - 1) * limit,
+			attributes: [
+				"residence_id",
+				[
+					Sequelize.fn("COUNT", Sequelize.col("donate_id")),
+					"countResidence",
+				],
+				[Sequelize.fn("SUM", Sequelize.col("money")), "sumMoney"],
+				[Sequelize.fn("MAX", Sequelize.col("money")), "maxMoney"],
+			],
+			include: [
+				{
+					model: Residence,
+					as: "residence",
+				},
+			],
+			raw: true,
+			nest: true,
+		})
+			.then(async (data) => {
+				let donate = await Donate.findAndCountAll({
+					where: { isDeleted: false },
+				});
+				let totalDonate = donate.count;
+				let maxDonate = await Donate2Residence.findOne({
+					where: {
+						residence_id: id,
+						money: data[0].maxMoney,
+						isDeleted: false,
+					},
+					raw: true,
+					nest: true,
+				});
+				data[0] = { ...data[0], maxDonate, totalDonate };
+				res.send(createSuccess(data[0]));
+			})
+			.catch((err) => {
+				next(createHttpError(500, err));
+			});
+	} catch (err) {
+		next(err);
+	}
+};
+let getDonateStats = async (req, res, next) => {
 	try {
 		let page = parseInt(req.query.page) || 1;
 		let limit = parseInt(req.query.limit) || 10;
@@ -385,6 +436,43 @@ let getStats = async (req, res, next) => {
 			group: ["donate_id"],
 		})
 			.then((data) => {
+				console.log("data hanoi", data);
+				res.send(createSuccess(data.rows, data.count, page, limit));
+			})
+			.catch((err) => {
+				next(createHttpError(500, err));
+			});
+	} catch (err) {
+		next(err);
+	}
+};
+let getResidenceStats = async (req, res, next) => {
+	try {
+		let page = parseInt(req.query.page) || 1;
+		let limit = parseInt(req.query.limit) || 10;
+		Donate2Residence.findAndCountAll({
+			where: { isDeleted: false },
+			limit: limit,
+			offset: (page - 1) * limit,
+			attributes: [
+				"residence_id",
+				[
+					Sequelize.fn("COUNT", Sequelize.col("donate_id")),
+					"countDonate",
+				],
+				[Sequelize.fn("SUM", Sequelize.col("money")), "sumMoney"],
+				[Sequelize.fn("MAX", Sequelize.col("money")), "maxMoney"],
+			],
+			include: [
+				{
+					model: Residence,
+					as: "residence",
+				},
+			],
+			group: ["residence_id"],
+		})
+			.then((data) => {
+				console.log("data hanoi", data);
 				res.send(createSuccess(data.rows, data.count, page, limit));
 			})
 			.catch((err) => {
@@ -401,7 +489,9 @@ module.exports = {
 	updateDonate2Residence,
 	deleteDonate2Residence,
 	getDonate2ResidenceByDonate,
-	getStats,
-	getStatsById,
+	getDonateStats,
+	getDonateStatsById,
 	getResidenceByDonate,
+	getResidenceStats,
+	getResidenceStatsById,
 };
