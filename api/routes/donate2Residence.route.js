@@ -25,5 +25,5 @@ route.get(
 	"/byResidenceStats/:id",
 	donate2ResidenceController.getResidenceStatsById
 );
-route.get("/byResidenceStas", donate2ResidenceController.getResidenceStats);
+route.get("/byResidenceStats", donate2ResidenceController.getResidenceStats);
 module.exports = route;
