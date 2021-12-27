@@ -54,7 +54,7 @@ let getDonate2ResidenceByResidence = async (req, res, next) => {
 			throw createHttpError(400, "params missing residence_Number!");
 		}
 		let residence_number = req.params.id;
-		let residence = await Residence.findeOne({
+		let residence = await Residence.findOne({
 			where: { isDeleted: false, residence_number: residence_number },
 		});
 		if (!residence) {
