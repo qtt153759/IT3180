@@ -13,6 +13,7 @@ const Residences = sequelize.define(
 		},
 		residence_number: {
 			type: DataTypes.STRING,
+			unique: true,
 			allowNull: false,
 		},
 		headerId: {
@@ -52,8 +53,7 @@ const Residences = sequelize.define(
 );
 
 Residences.hasMany(Demographics, {
-	foreignKey: { allowNull: false , },
-	
+	foreignKey: { allowNull: false },
 });
 
 Demographics.belongsTo(Residences);
