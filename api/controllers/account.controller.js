@@ -50,8 +50,8 @@ const getProfile = async (req, res, next) => {
 
 const getAllAccount = async (req, res, next) => {
 	try {
-		const page = +req.query || 1;
-		const limit = +req.query || 10;
+		const page = +req.query.page || 1;
+		const limit = +req.query.limit || 10;
 
 		const accounts = await Account.findAndCountAll({
 			raw: true,
