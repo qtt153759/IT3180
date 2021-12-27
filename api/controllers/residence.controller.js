@@ -15,6 +15,7 @@ let create = async (req, res, next) => {
 		if (!(provinceId && districtId && wardId)) {
 			throw createHttpError(400, "body missing field!");
 		}
+		
 
 		const data = await Residences.create(req.body);
 
@@ -30,8 +31,16 @@ let getAll = (req, res, next) => {
 		let page = parseInt(req.query.page) || 1;
 		let limit = parseInt(req.query.limit) || 10;
 
+		let where = {
+			isDeleted: false,
+		};
+
+		if (req.query.number) {
+			where.residence_number = req.query.number;
+		}
+
 		Residences.findAndCountAll({
-			where: { isDeleted: false },
+			where,
 			limit: limit,
 			offset: (page - 1) * limit,
 		})
@@ -293,6 +302,10 @@ let moveSingleDemographics = async (req, res, next) => {
 				id: demographicId,
 			},
 		});
+
+		if (demographic.relationshipWithHeader == relationship.CHU_HO) {
+			throw createHttpError(400, `${demographicId} is header`);
+		}
 
 		if (!demographic)
 			throw createHttpError(

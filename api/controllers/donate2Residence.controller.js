@@ -144,7 +144,6 @@ let getDonate2ResidenceByDonate = async (req, res, next) => {
 let createDonate2Residence = async (req, res, next) => {
 	try {
 		// chắc chắn phải có 3 trường này
-		console.log("==================");
 		console.log("req body", req.body);
 		let { donate_id, residence_number } = req.body;
 		if (!req.body || !donate_id || !residence_number) {

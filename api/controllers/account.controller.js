@@ -1,40 +1,69 @@
 const accountService = require("../services/account.service");
 const { userValidator } = require("../helpers/validator");
+const { signToken } = require("../helpers/jwt.helper");
 const createError = require("http-errors");
+const createSuccess = require("../helpers/respose.success");
+const Account = require("../models/account.model");
 
 let handleLogin = async (req, res, next) => {
 	try {
 		const { error } = userValidator(req.body);
 		if (error) throw createError(500, error.details[0].message);
 
-		let userData = await accountService.handleUserLogin(req.body);
+		const user = await accountService.handleUserLogin(req.body);
+		const token = await signToken(user.id);
 
-		return res.status(200).json({
-			message: userData.errMessage,
-			user: userData.user ? userData.user : {},
-		});
+		return res.send(createSuccess({ user, token }));
 	} catch (err) {
 		next(err);
 	}
 };
-
 
 let createAccount = async (req, res, next) => {
 	try {
 		const { error } = userValidator(req.body); //validate
 		if (error) throw createError(500, error.details[0].message);
 
-		let userData = await accountService.createUserAccount(req.body); //tao file accountservice rieng cho gon
+		const user = await accountService.createUserAccount(req.body); //tao file accountservice rieng cho gon
+		const token = await signToken(user.id);
 
-		return res.status(200).json({
-			message: userData.errMessage,
-			user: userData.user ? userData.user : {},
-		});
+		return res.send(createSuccess({ user, token }));
 	} catch (err) {
 		next(err);
 	}
 };
+
+const getProfile = async (req, res, next) => {
+	try {
+		const id = req.id;
+		const account = await Account.findOne({
+			where: id,
+			raw: true,
+		});
+
+		delete account.password;
+		res.send(createSuccess(account));
+	} catch (err) {
+		next(err);
+	}
+};
+
+const getAllAccount = async (req, res, next) => {
+	try {
+		const account = await Account.findAndCountAll({
+			raw: true,
+		});
+
+		delete account.password;
+		res.send(createSuccess(account.rows, account.count));
+	} catch (err) {
+		next(err);
+	}
+};
+
 module.exports = {
 	handleLogin,
 	createAccount,
+	getProfile,
+	getAllAccount,
 };

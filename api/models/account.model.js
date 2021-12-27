@@ -23,8 +23,15 @@ const Account = sequelize.define(
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
+		username: {
+			type: DataTypes.STRING,
+		},
 	},
 	{
+		indexes: [
+			{ unique: true, fields: ["email"] },
+			{ unique: true, fields: ["id"] },
+		],
 		timestamps: true,
 		underscored: true,
 		createdAt: true,

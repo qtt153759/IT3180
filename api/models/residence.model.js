@@ -44,6 +44,10 @@ const Residences = sequelize.define(
 		},
 	},
 	{
+		indexes: [
+			{ unique: true, fields: ["residence_number"] },
+			{ unique: true, fields: ["id"] },
+		],
 		timestamps: true,
 		underscored: true,
 		createdAt: "createdAt",
@@ -52,8 +56,7 @@ const Residences = sequelize.define(
 );
 
 Residences.hasMany(Demographics, {
-	foreignKey: { allowNull: false , },
-	
+	foreignKey: { allowNull: false },
 });
 
 Demographics.belongsTo(Residences);
