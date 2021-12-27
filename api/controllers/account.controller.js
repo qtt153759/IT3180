@@ -3,7 +3,6 @@ const { userValidator } = require("../helpers/validator");
 const { signToken } = require("../helpers/jwt.helper");
 const createError = require("http-errors");
 const createSuccess = require("../helpers/respose.success");
-const JWT = require("jsonwebtoken");
 const Account = require("../models/account.model");
 
 let handleLogin = async (req, res, next) => {
@@ -41,9 +40,22 @@ const getProfile = async (req, res, next) => {
 			where: id,
 			raw: true,
 		});
-		
+
 		delete account.password;
 		res.send(createSuccess(account));
+	} catch (err) {
+		next(err);
+	}
+};
+
+const getAllAccount = async (req, res, next) => {
+	try {
+		const account = await Account.findAndCountAll({
+			raw: true,
+		});
+
+		delete account.password;
+		res.send(createSuccess(account.rows, account.count));
 	} catch (err) {
 		next(err);
 	}
@@ -53,4 +65,5 @@ module.exports = {
 	handleLogin,
 	createAccount,
 	getProfile,
+	getAllAccount,
 };
