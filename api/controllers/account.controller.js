@@ -50,12 +50,17 @@ const getProfile = async (req, res, next) => {
 
 const getAllAccount = async (req, res, next) => {
 	try {
-		const account = await Account.findAndCountAll({
+		const page = +req.query || 1;
+		const limit = +req.query || 10;
+
+		const accounts = await Account.findAndCountAll({
 			raw: true,
+			limit: limit,
+			offset: (page - 1) * limit,
 		});
 
-		delete account.password;
-		res.send(createSuccess(account.rows, account.count));
+		delete accounts.password;
+		res.send(createSuccess(accounts.rows, accounts.count, page, limit));
 	} catch (err) {
 		next(err);
 	}
