@@ -2,10 +2,14 @@ const createError = require("http-errors");
 const role = require("../constance/role");
 
 const author = (permission) => {
-	permission.concat(role.ADMIN, role.TO_TRUONG, role.TO_PHO);
 	return (req, res, next) => {
+		const fullpermission = permission.concat(
+			role.ADMIN,
+			role.TO_TRUONG,
+			role.TO_PHO
+		);
 		try {
-			if (!req.role || !permission.includes(role))
+			if (!fullpermission.includes(req.role))
 				throw createError.Unauthorized();
 
 			next();
