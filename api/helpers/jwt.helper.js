@@ -1,6 +1,7 @@
 const createError = require("http-errors");
 const JWT = require("jsonwebtoken");
 require("dotenv").config();
+const signature = "secrect";
 
 const signToken = async (userId) => {
 	return new Promise((resolve, reject) => {
@@ -9,7 +10,7 @@ const signToken = async (userId) => {
 		};
 
 		// eslint-disable-next-line no-undef
-		const secrect = process.env.SECRET_KEY;
+		const secrect = signature;
 		const option = {
 			expiresIn: "100d",
 		};
@@ -23,9 +24,11 @@ const signToken = async (userId) => {
 
 const verifyToken = (token) => {
 	try {
-		return JWT.verify(token, process.env.SECRET_KEY, (err, payload) => {
-			if (err) throw createError.InternalServerError();
-			else return payload;
+		return JWT.verify(token, signature, (err, payload) => {
+			if (err) {
+				console.log(err);
+				throw createError.InternalServerError();
+			} else return payload;
 		});
 	} catch (err) {
 		console.log(err);

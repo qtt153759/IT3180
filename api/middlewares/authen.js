@@ -9,8 +9,12 @@ const authen = async (req, res, next) => {
 
 		const authHeader =
 			req.headers.authorization || req.headers.Authorization;
+
+		if (!authHeader) throw createHttpError(401, "access token not found");
+
 		const bearerToken = authHeader.split(" ");
 		const token = bearerToken[1];
+
 		const payload = await verifyToken(token);
 		if (!payload) throw createHttpError.Unauthorized();
 
@@ -18,10 +22,10 @@ const authen = async (req, res, next) => {
 			where: payload.id,
 		});
 
+		if (!account) throw createHttpError.Unauthorized();
+
 		req.id = payload.id;
 		req.role = account.role;
-
-		if (!account) throw createHttpError.Unauthorized();
 
 		next();
 	} catch (err) {
