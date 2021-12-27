@@ -18,18 +18,21 @@ let createDemographics = async (req, res, next) => {
 		let { residenceId, relationshipWithHeader, identityCardNumber } =
 			req.body;
 
-		if (!(residenceId && relationshipWithHeader && identityCardNumber)) {
+		if (!(residenceId && relationshipWithHeader)) {
 			throw createHttpError(400, "Missing parameter");
 		}
 
+		if (identityCardNumber) {
+			let existDemographic = await Demographics.findOne({
+				where: { identityCardNumber: identityCardNumber },
+			});
 
-		let existDemographic = await Demographics.findOne({
-			where: { identityCardNumber: identityCardNumber },
-		});
-
-
-		if (existDemographic) {
-			throw createHttpError(400, "identityCardNumber is already exist");
+			if (existDemographic) {
+				throw createHttpError(
+					400,
+					"identityCardNumber is already exist"
+				);
+			}
 		}
 
 		let demographic = await Demographics.create(req.body);
@@ -83,7 +86,6 @@ let retrieveAllDemographic = async (req, res, next) => {
 			where.genderId = conditionGender;
 		}
 
-
 		//create where clause
 		if (req.query.age) {
 			let arrAge = req.query.age.split(",");
@@ -109,7 +111,6 @@ let retrieveAllDemographic = async (req, res, next) => {
 			};
 		}
 
-
 		if (req.query.name) {
 			where = {
 				...where,
@@ -128,13 +129,11 @@ let retrieveAllDemographic = async (req, res, next) => {
 			};
 		}
 
-
 		//order by
 		if (req.query.orderColumn) {
 			let orderDirection = req.query.orderDirection || "DESC";
 			order = [req.query.orderColumn, orderDirection];
 		}
-
 
 		//push every thing in condition (nation,role,header)
 		if (include && include.length > 0) {
