@@ -1,26 +1,65 @@
 const express = require("express");
 const route = express.Router();
 const residenceController = require("../controllers/residence.controller");
-const authen = require("../middlewares/authen");
 const author = require("../middlewares/author");
 const role = require("../constance/role");
 
 // get thay đổi của hộ khẩu
-route.get("/change/:id", residenceController.getResidenceChange);
+route.get(
+	"/change/:id",
+	author([role.CAN_BO_HO_KHAU, role.CAN_BO_NHAN_KHAU]),
+	residenceController.getResidenceChange
+);
 
-route.get("/", residenceController.getAll);
-route.get("/:id", residenceController.getResidenceById);
-route.post("/", residenceController.create);
-route.put("/update", residenceController.updateResidence);
-route.delete("/delete/:id", residenceController.deleteResidence);
+route.get(
+	"/",
+	author([role.CAN_BO_HO_KHAU, role.CAN_BO_NHAN_KHAU]),
+	residenceController.getAll
+);
+route.get(
+	"/:id",
+	author([role.CAN_BO_HO_KHAU, role.CAN_BO_NHAN_KHAU]),
+	residenceController.getResidenceById
+);
+route.post(
+	"/",
+	author([role.CAN_BO_HO_KHAU, role.CAN_BO_NHAN_KHAU]),
+	residenceController.create
+);
+route.put(
+	"/update",
+	author([role.CAN_BO_HO_KHAU, role.CAN_BO_NHAN_KHAU]),
+	residenceController.updateResidence
+);
+route.delete(
+	"/delete/:id",
+	author([role.CAN_BO_HO_KHAU, role.CAN_BO_NHAN_KHAU]),
+	residenceController.deleteResidence
+);
 
 // Lấy danh sách nhân khẩu trong hộ khẩu
-route.get("/:id/demographics", residenceController.getDemographicsInResidence);
+route.get(
+	"/:id/demographics",
+	author([role.CAN_BO_HO_KHAU, role.CAN_BO_NHAN_KHAU]),
+	residenceController.getDemographicsInResidence
+);
 
 // get thay đổi của hộ khẩu
-route.get("/change", residenceController.getResidenceChange);
+route.get(
+	"/change",
+	author([role.CAN_BO_HO_KHAU]),
+	residenceController.getResidenceChange
+);
 
-route.post("/move", residenceController.moveDemographics);
-route.post("/move-single", residenceController.moveSingleDemographics);
+route.post(
+	"/move",
+	author([role.CAN_BO_HO_KHAU]),
+	residenceController.moveDemographics
+);
+route.post(
+	"/move-single",
+	author([role.CAN_BO_HO_KHAU]),
+	residenceController.moveSingleDemographics
+);
 
 module.exports = route;

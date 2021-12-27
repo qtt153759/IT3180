@@ -16,6 +16,8 @@ const Donate2ResidenceRouteStats = require("./routes/donate2ResidenceStats.route
 const NationRoute = require("./routes/nation.route");
 const AbsentStayRoute = require("./routes/absentStay.route");
 
+const authen = require("./middlewares/authen");
+
 // parse application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: false }));
 
@@ -34,15 +36,15 @@ sequelize
 		console.log(err);
 	});
 
-app.use("/api/residence", ResidenceRoute);
-app.use("/api/demographics", DemographicsRoute);
+app.use("/api/residence", authen, ResidenceRoute);
+app.use("/api/demographics", authen, DemographicsRoute);
 app.use("/api/address", AddressRoute);
 app.use("/api/account", AccountRoute);
-app.use("/api/donate", DonateRoute);
-app.use("/api/donate2Residence", Donate2ResidenceRoute);
-app.use("/api/donate2ResidenceStats", Donate2ResidenceRouteStats);
+app.use("/api/donate", authen, DonateRoute);
+app.use("/api/donate2Residence", authen, Donate2ResidenceRoute);
+app.use("/api/donate2ResidenceStats", authen, Donate2ResidenceRouteStats);
 app.use("/api/nation", NationRoute);
-app.use("/api/absentStay", AbsentStayRoute);
+app.use("/api/absentStay", authen, AbsentStayRoute);
 app.use((req, res, next) => {
 	next(createError(404, "Not Found"));
 });
