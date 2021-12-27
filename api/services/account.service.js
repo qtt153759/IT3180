@@ -22,8 +22,8 @@ let handleUserLogin = (dataLogin) => {
 			let correctPassword = bcrypt.compareSync(password, user.password);
 
 			if (!correctPassword) throw createError.Unauthorized();
-
-			resolve(true);
+			delete user.password;
+			resolve(user);
 		} catch (err) {
 			reject(err);
 		}

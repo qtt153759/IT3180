@@ -3,6 +3,8 @@ const { userValidator } = require("../helpers/validator");
 const { signToken } = require("../helpers/jwt.helper");
 const createError = require("http-errors");
 const createSuccess = require("../helpers/respose.success");
+const JWT = require("jsonwebtoken");
+const Account = require("../models/account.model");
 
 let handleLogin = async (req, res, next) => {
 	try {
@@ -12,7 +14,7 @@ let handleLogin = async (req, res, next) => {
 		const user = await accountService.handleUserLogin(req.body);
 		const token = await signToken(user.id);
 
-		return res.send(createSuccess({ token }));
+		return res.send(createSuccess({ user, token }));
 	} catch (err) {
 		next(err);
 	}
@@ -32,7 +34,23 @@ let createAccount = async (req, res, next) => {
 	}
 };
 
+const getProfile = async (req, res, next) => {
+	try {
+		const id = req.id;
+		const account = await Account.findOne({
+			where: id,
+			raw: true,
+		});
+		
+		delete account.password;
+		res.send(createSuccess(account));
+	} catch (err) {
+		next(err);
+	}
+};
+
 module.exports = {
 	handleLogin,
 	createAccount,
+	getProfile,
 };

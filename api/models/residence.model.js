@@ -13,7 +13,6 @@ const Residences = sequelize.define(
 		},
 		residence_number: {
 			type: DataTypes.STRING,
-			unique: true,
 			allowNull: false,
 		},
 		headerId: {
@@ -45,6 +44,10 @@ const Residences = sequelize.define(
 		},
 	},
 	{
+		indexes: [
+			{ unique: true, fields: ["residence_number"] },
+			{ unique: true, fields: ["id"] },
+		],
 		timestamps: true,
 		underscored: true,
 		createdAt: "createdAt",

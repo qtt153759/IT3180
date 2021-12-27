@@ -15,6 +15,7 @@ let create = async (req, res, next) => {
 		if (!(provinceId && districtId && wardId)) {
 			throw createHttpError(400, "body missing field!");
 		}
+		
 
 		const data = await Residences.create(req.body);
 

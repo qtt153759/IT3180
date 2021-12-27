@@ -11,7 +11,7 @@ const signToken = async (userId) => {
 		// eslint-disable-next-line no-undef
 		const secrect = process.env.SECRET_KEY;
 		const option = {
-			expiresIn: "1h",
+			expiresIn: "100d",
 		};
 
 		JWT.sign(payload, secrect, option, (err, token) => {
@@ -23,7 +23,7 @@ const signToken = async (userId) => {
 
 const verifyToken = (token) => {
 	try {
-		JWT.verify(token, process.env.SECRET_KEY, (err, payload) => {
+		return JWT.verify(token, process.env.SECRET_KEY, (err, payload) => {
 			if (err) throw createError.InternalServerError();
 			else return payload;
 		});

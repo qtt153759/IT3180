@@ -25,6 +25,11 @@ const Account = sequelize.define(
 		},
 	},
 	{
+		indexes: [
+			{unique: true, fields: ["email"]},
+			{unique: true, fields: ["id"]}
+
+		],
 		timestamps: true,
 		underscored: true,
 		createdAt: true,
