@@ -6,7 +6,7 @@ const authen = require("../middlewares/authen");
 
 route.get("/", authen, accountController.getAllAccount);
 route.post("/login", accountController.handleLogin);
-route.post("/register", authen, accountController.createAccount);
+route.post("/register", accountController.createAccount);
 route.get("/profile", authen, accountController.getProfile);
 
 module.exports = route;
