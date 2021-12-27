@@ -160,6 +160,9 @@ let createDonate2Residence = async (req, res, next) => {
 				"residence is not Exist vs cái number này!"
 			);
 		}
+		if (!residenceExist.headerId) {
+			throw createHttpError(400, "residence doesn't have header!");
+		}
 		let residence_id = residenceExist.id;
 		//Check xem có trùng ko
 		const exist = await Donate2Residence.findOne({
@@ -237,6 +240,9 @@ let updateDonate2Residence = async (req, res, next) => {
 		});
 		if (!residenceExist) {
 			throw createHttpError(400, "residence is not Exist!");
+		}
+		if (!residenceExist.headerId) {
+			throw createHttpError(400, "residence doesn't have header!");
 		}
 		let residence_id = residenceExist.id;
 		//check xem có khoản phí đó không
