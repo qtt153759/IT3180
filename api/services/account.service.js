@@ -30,7 +30,7 @@ let handleUserLogin = (dataLogin) => {
 	});
 };
 
-let createUserAccount = ({ email, password, role }) => {
+let createUserAccount = ({ email, password, role, username }) => {
 	return new Promise(async (resolve, reject) => {
 		try {
 			let hashedPassword = await hashUserPassword(password);
@@ -39,6 +39,7 @@ let createUserAccount = ({ email, password, role }) => {
 				email,
 				password: hashedPassword,
 				role,
+				username,
 			});
 
 			resolve(account);
