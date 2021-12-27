@@ -6,11 +6,7 @@ const route = express.Router();
 const author = require("../middlewares/author");
 const role = require("../constance/role");
 
-route.get(
-	"/",
-	author([role.CAN_BO_THU_PHI, role.CAN_BO_HO_KHAU]),
-	donate2ResidenceController.getAllDonate2Residence
-);
+route.get("/", donate2ResidenceController.getAllDonate2Residence);
 route.get(
 	"/byResidence/:id",
 	author([role.CAN_BO_THU_PHI, role.CAN_BO_HO_KHAU]),
@@ -31,17 +27,17 @@ route.get(
 );
 route.post(
 	"/",
-	author([role.CAN_BO_THU_PHI, role.CAN_BO_HO_KHAU]),
+	author([role.CAN_BO_THU_PHI]),
 	donate2ResidenceController.createDonate2Residence
 );
 route.put(
 	"/update",
-	author([role.CAN_BO_THU_PHI, role.CAN_BO_HO_KHAU]),
+	author([role.CAN_BO_THU_PHI]),
 	donate2ResidenceController.updateDonate2Residence
 );
 route.delete(
 	"/delete/:id",
-	author([role.CAN_BO_THU_PHI, role.CAN_BO_HO_KHAU]),
+	author([role.CAN_BO_THU_PHI]),
 	donate2ResidenceController.deleteDonate2Residence
 );
 

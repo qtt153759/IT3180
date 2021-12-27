@@ -21,19 +21,15 @@ route.get(
 	author([role.CAN_BO_HO_KHAU, role.CAN_BO_NHAN_KHAU]),
 	residenceController.getResidenceById
 );
-route.post(
-	"/",
-	author([role.CAN_BO_HO_KHAU, role.CAN_BO_NHAN_KHAU]),
-	residenceController.create
-);
+route.post("/", author([role.CAN_BO_HO_KHAU]), residenceController.create);
 route.put(
 	"/update",
-	author([role.CAN_BO_HO_KHAU, role.CAN_BO_NHAN_KHAU]),
+	author([role.CAN_BO_HO_KHAU]),
 	residenceController.updateResidence
 );
 route.delete(
 	"/delete/:id",
-	author([role.CAN_BO_HO_KHAU, role.CAN_BO_NHAN_KHAU]),
+	author([role.CAN_BO_HO_KHAU]),
 	residenceController.deleteResidence
 );
 

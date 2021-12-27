@@ -21,22 +21,22 @@ route.get(
 );
 route.post(
 	"/",
-	author([role.CAN_BO_HO_KHAU, role.CAN_BO_NHAN_KHAU]),
+	author([role.CAN_BO_NHAN_KHAU]),
 	demographicsController.createDemographics
 );
 route.put(
 	"/update",
-	author([role.CAN_BO_HO_KHAU, role.CAN_BO_NHAN_KHAU]),
+	author([role.CAN_BO_NHAN_KHAU]),
 	demographicsController.updateDemographic
 );
 route.delete(
 	"/delete/:id",
-	author([role.CAN_BO_HO_KHAU, role.CAN_BO_NHAN_KHAU]),
+	author([role.CAN_BO_NHAN_KHAU]),
 	demographicsController.deleteDemographics
 );
 route.put(
 	"/update/status/:id",
-	author([role.CAN_BO_HO_KHAU, role.CAN_BO_NHAN_KHAU]),
+	author([role.CAN_BO_NHAN_KHAU]),
 	demographicsController.updateDemographicStatus
 );
 
