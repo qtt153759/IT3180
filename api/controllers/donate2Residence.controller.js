@@ -51,9 +51,16 @@ let getAllDonate2Residence = async (req, res, next) => {
 let getDonate2ResidenceByResidence = async (req, res, next) => {
 	try {
 		if (!req.params.id) {
-			throw createHttpError(400, "params missing residence_id!");
+			throw createHttpError(400, "params missing residence_Number!");
 		}
-		let id = req.params.id;
+		let residence_number = req.params.id;
+		let residence = await Residence.findeOne({
+			where: { isDeleted: false, residence_number: residence_number },
+		});
+		if (!residence) {
+			throw createHttpError(400, "Không có residence vs số number này!");
+		}
+		let { id } = residence;
 		await Donate2Residence.findAll({
 			where: { residence_id: id, isDeleted: false },
 			include: [
@@ -144,11 +151,23 @@ let getDonate2ResidenceByDonate = async (req, res, next) => {
 let createDonate2Residence = async (req, res, next) => {
 	try {
 		// chắc chắn phải có 3 trường này
-		let { donate_id, residence_id } = req.body;
-		if (!req.body || !donate_id || !residence_id) {
+		console.log("req body", req.body);
+		let { donate_id, residence_number } = req.body;
+		if (!req.body || !donate_id || !residence_number) {
 			throw createHttpError(400, "body missing field!");
 		}
 		let money = req.body.money || 0;
+		//check xem có hộ đấy ko
+		const residenceExist = await Residence.findOne({
+			where: { residence_number: residence_number, isDeleted: false },
+		});
+		if (!residenceExist) {
+			throw createHttpError(
+				400,
+				"residence is not Exist vs cái number này!"
+			);
+		}
+		let residence_id = residenceExist.id;
 		//Check xem có trùng ko
 		const exist = await Donate2Residence.findOne({
 			where: {
@@ -162,13 +181,6 @@ let createDonate2Residence = async (req, res, next) => {
 				400,
 				"Dupicate both donate_id and residence_id"
 			);
-		//check xem có hộ đấy ko
-		const residenceExist = await Residence.findOne({
-			where: { id: residence_id, isDeleted: false },
-		});
-		if (!residenceExist) {
-			throw createHttpError(400, "residence is not Exist!");
-		}
 		//check xem có khoản phí đó không
 		const donateExist = await Donate.findOne({
 			where: { id: donate_id, isDeleted: false },
@@ -183,15 +195,15 @@ let createDonate2Residence = async (req, res, next) => {
 			//xét xem đóng theo hộ hay người
 			if (unit === 2) {
 				//nếu theo người thì tính số người trong hộ đó
-				let residence_Number = await Demographics.findAndCountAll({
+				let residence_AllNumber = await Demographics.findAndCountAll({
 					where: {
 						residence_id: residence_id,
 						isDeleted: false,
 					},
 				});
 				//số tiền bằng tích fee và số người trong hộ
-				money = fee * residence_Number.count;
-				console.log("residence_Number", residence_Number);
+				money = fee * residence_AllNumber.count;
+				console.log("residence_Number", residence_AllNumber);
 			} else if (unit === 1) {
 				//nếu theo hộ thì lấy luôn số fee làm tiền đóng money
 				money = fee;
@@ -220,19 +232,20 @@ let createDonate2Residence = async (req, res, next) => {
 let updateDonate2Residence = async (req, res, next) => {
 	try {
 		// chắc chắn phải có 3 trường này
-		let { id, donate_id, residence_id } = req.body;
-		if (!req.body || !id || !donate_id || !residence_id) {
+		let { id, donate_id, residence_number } = req.body;
+		if (!req.body || !id || !donate_id || !residence_number) {
 			throw createHttpError(400, "body missing field!");
 		}
 		let money = req.body.money || 0;
 
 		//check xem có hộ đấy ko
 		const residenceExist = await Residence.findOne({
-			where: { id: residence_id, isDeleted: false },
+			where: { residence_number: residence_number, isDeleted: false },
 		});
 		if (!residenceExist) {
 			throw createHttpError(400, "residence is not Exist!");
 		}
+		let residence_id = residenceExist.id;
 		//check xem có khoản phí đó không
 		const donateExist = await Donate.findOne({
 			where: { id: donate_id, isDeleted: false },
@@ -247,15 +260,15 @@ let updateDonate2Residence = async (req, res, next) => {
 			//xét xem đóng theo hộ hay người
 			if (unit === 2) {
 				//nếu theo người thì tính số người trong hộ đó
-				let residence_Number = await Demographics.findAndCountAll({
+				let residence_AllNumber = await Demographics.findAndCountAll({
 					where: {
 						residence_id: residence_id,
 						isDeleted: false,
 					},
 				});
 				//số tiền bằng tích fee và số người trong hộ
-				money = fee * residence_Number.count;
-				console.log("residence_Number", residence_Number);
+				money = fee * residence_AllNumber.count;
+				console.log("residence_Number", residence_AllNumber);
 			} else if (unit === 1) {
 				//nếu theo hộ thì lấy luôn số fee làm tiền đóng money
 				money = fee;
@@ -303,7 +316,10 @@ let updateDonate2Residence = async (req, res, next) => {
 
 let deleteDonate2Residence = async (req, res, next) => {
 	try {
-		const id = req.params.id;
+		if (req.params.id) {
+			throw createHttpError(400, "Missing id");
+		}
+		let id = req.params.id;
 		Donate2Residence.update(
 			{
 				isDeleted: true,
