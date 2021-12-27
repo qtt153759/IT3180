@@ -61,7 +61,7 @@ let retrieveAllDemographic = async (req, res, next) => {
 		let limit = parseInt(req.query.limit) || 10;
 		let condition = {};
 		let include = [];
-		let order = [];
+		condition.order = [["updatedAt", "DESC"]];
 		let where = {};
 		where.isDeleted = false;
 		condition.limit = limit;
@@ -117,17 +117,9 @@ let retrieveAllDemographic = async (req, res, next) => {
 				],
 			};
 		}
-		//order by
-		if (req.query.orderColumn) {
-			let orderDirection = req.query.orderDirection || "DESC";
-			order = [req.query.orderColumn, orderDirection];
-		}
 		//push every thing in condition (nation,role,header)
 		if (include && include.length > 0) {
 			condition.include = include;
-		}
-		if (order && order.length > 0) {
-			condition.order = [order];
 		}
 		condition.where = where;
 		await Demographics.findAndCountAll(condition)

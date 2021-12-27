@@ -47,6 +47,7 @@ let getAll = (req, res, next) => {
 			where,
 			limit: limit,
 			offset: (page - 1) * limit,
+			order: [["updatedAt", "DESC"]],
 		})
 			.then((data) => {
 				res.send(createSuccess(data.rows, data.count, page, limit));
@@ -83,12 +84,12 @@ let updateResidence = async (req, res, next) => {
 			});
 
 		let id = req.body.id;
-
+		console.log("req body================", req.body);
 		let updatedResidence = req.body;
 
 		let residence = await Residences.findOne({
 			where: {
-				id,
+				id: id,
 				isDeleted: false,
 			},
 
@@ -98,18 +99,18 @@ let updateResidence = async (req, res, next) => {
 		if (updatedResidence.headerId) {
 			const newHeader = await residence.demographics.find(
 				(item) =>
-					item.id == updatedResidence.headerId && !item.isDeleted
+					item.id === updatedResidence.headerId && !item.isDeleted
 			);
 
 			if (!newHeader)
 				throw createHttpError(
 					`not found header id ${updatedResidence.headerId} in residence id ${id}`
 				);
-
+			console.log("new Header==========", newHeader);
 			const OldHeader = await residence.demographics.find(
-				(item) => item.relationshipWithHeader == relationship.CHU_HO
+				(item) => item.relationshipWithHeader === relationship.CHU_HO
 			);
-
+			console.log("new Older", OldHeader);
 			await Promise.all([
 				Demographics.update(
 					{
@@ -191,6 +192,7 @@ let getDemographicsInResidence = async (req, res, next) => {
 		let [demographics, residence] = await Promise.all([
 			Demographics.findAll({
 				where: { residenceId: id },
+				order: [["updatedAt", "DESC"]],
 			}),
 			Residences.findOne({
 				where: { id },
@@ -211,6 +213,7 @@ let getResidenceChange = async (req, res, next) => {
 		if (!id) throw createHttpError(400, "id not found");
 		const change = await ResidenceHistory.findAndCountAll({
 			where: { isDeleted: false, residenceId: id },
+			order: [["updatedAt", "DESC"]],
 		});
 
 		return res.send(createSuccess(change.rows, change.count));

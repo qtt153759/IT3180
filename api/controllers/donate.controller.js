@@ -9,7 +9,7 @@ let getDonate = async (req, res, next) => {
 		if (req.query.type) {
 			condition.type = req.query.type;
 		}
-		Donate.findAll({ where: condition })
+		Donate.findAll({ where: condition, order: [["updatedAt", "DESC"]] })
 			.then((data) => {
 				res.send(createSuccess(data));
 			})
