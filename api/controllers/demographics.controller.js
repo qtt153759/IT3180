@@ -17,12 +17,17 @@ let createDemographics = async (req, res, next) => {
 		if (error) throw createHttpError(500, error.details[0].message);
 		let { residenceId, relationshipWithHeader, identityCardNumber } =
 			req.body;
+
 		if (!(residenceId && relationshipWithHeader && identityCardNumber)) {
 			throw createHttpError(400, "Missing parameter");
 		}
+
+
 		let existDemographic = await Demographics.findOne({
 			where: { identityCardNumber: identityCardNumber },
 		});
+
+
 		if (existDemographic) {
 			throw createHttpError(400, "identityCardNumber is already exist");
 		}
@@ -66,6 +71,7 @@ let retrieveAllDemographic = async (req, res, next) => {
 		where.isDeleted = false;
 		condition.limit = limit;
 		condition.offset = (page - 1) * limit;
+
 		//create include giữa 2 model associate(chưa có model Gender)
 		if (req.query.gender) {
 			let arrGender = req.query.gender.split(",");
@@ -76,6 +82,8 @@ let retrieveAllDemographic = async (req, res, next) => {
 			}
 			where.genderId = conditionGender;
 		}
+
+
 		//create where clause
 		if (req.query.age) {
 			let arrAge = req.query.age.split(",");
@@ -100,6 +108,8 @@ let retrieveAllDemographic = async (req, res, next) => {
 				[Op.or]: conditionAge,
 			};
 		}
+
+
 		if (req.query.name) {
 			where = {
 				...where,
@@ -117,6 +127,15 @@ let retrieveAllDemographic = async (req, res, next) => {
 				],
 			};
 		}
+
+
+		//order by
+		if (req.query.orderColumn) {
+			let orderDirection = req.query.orderDirection || "DESC";
+			order = [req.query.orderColumn, orderDirection];
+		}
+
+
 		//push every thing in condition (nation,role,header)
 		if (include && include.length > 0) {
 			condition.include = include;
