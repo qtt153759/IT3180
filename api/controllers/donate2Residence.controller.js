@@ -64,6 +64,7 @@ let getDonate2ResidenceByResidence = async (req, res, next) => {
 					required: true,
 				},
 			],
+			order: [["updatedAt", "DESC"]],
 		})
 			.then((data) => {
 				res.send(createSuccess(data));
@@ -101,6 +102,7 @@ let getResidenceByDonate = async (req, res, next) => {
 			condition = { id: { [Op.in]: idList } };
 			data = await Residence.findAndCountAll({
 				where: condition,
+				order: [["updatedAt", "DESC"]],
 			});
 		}
 		res.send(createSuccess(data.rows, data.count));
@@ -130,6 +132,7 @@ let getDonate2ResidenceByDonate = async (req, res, next) => {
 					required: true,
 				},
 			],
+			order: [["updatedAt", "DESC"]],
 		})
 			.then((data) => {
 				res.send(createSuccess(data));

@@ -46,9 +46,6 @@ let getAllStayAbsent = async (req, res, next) => {
 	try {
 		let page = parseInt(req.query.page) || 1;
 		let limit = parseInt(req.query.limit) || 10;
-		let orderColumn = req.query.orderColumn || "id";
-		let orderDirection = req.query.orderDirection || "DESC";
-		let order = [orderColumn, orderDirection];
 
 		let condition = {};
 		condition.isDeleted = false;
@@ -68,7 +65,7 @@ let getAllStayAbsent = async (req, res, next) => {
 					as: "demographic",
 				},
 			],
-			order: [order],
+			order: [["updatedAt", "DESC"]],
 			limit: limit,
 			offset: (page - 1) * limit,
 		})

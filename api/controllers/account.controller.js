@@ -57,6 +57,7 @@ const getAllAccount = async (req, res, next) => {
 			raw: true,
 			limit: limit,
 			offset: (page - 1) * limit,
+			order: [["updatedAt", "DESC"]],
 		});
 
 		delete accounts.password;
