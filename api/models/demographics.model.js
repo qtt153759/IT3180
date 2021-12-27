@@ -1,8 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("./index");
 
-const Account = require("./account.model");
-
 const Demographics = sequelize.define(
 	"demographics",
 	{

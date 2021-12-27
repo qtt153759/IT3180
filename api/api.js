@@ -26,7 +26,7 @@ app.use(cors());
 
 // database
 sequelize
-	.sync({ alter: true, logging: false })
+	.sync({ alter: true, logging: false, force: false })
 	.then((data, err) => {
 		if (err) console.log("err: " + err);
 	})

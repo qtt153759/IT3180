@@ -1,18 +1,19 @@
+const createError = require("http-errors");
 const JWT = require("jsonwebtoken");
-const { process } = require("dotenv").config();
+require("dotenv").config();
 
-const signAccessToken = async (userId) => {
+const signToken = async (userId) => {
 	return new Promise((resolve, reject) => {
 		const payload = {
-			userId,
+			id: userId,
 		};
 
-		const secrect = process.env.rescrect;
+		// eslint-disable-next-line no-undef
+		const secrect = process.env.SECRET_KEY;
 		const option = {
-			expiresIn: "1h",
+			expiresIn: "100d",
 		};
 
-        
 		JWT.sign(payload, secrect, option, (err, token) => {
 			if (err) reject(err);
 			resolve(token);
@@ -20,6 +21,19 @@ const signAccessToken = async (userId) => {
 	});
 };
 
+const verifyToken = (token) => {
+	try {
+		return JWT.verify(token, process.env.SECRET_KEY, (err, payload) => {
+			if (err) throw createError.InternalServerError();
+			else return payload;
+		});
+	} catch (err) {
+		console.log(err);
+		throw err;
+	}
+};
+
 module.exports = {
-	signAccessToken,
+	signToken,
+	verifyToken,
 };

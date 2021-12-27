@@ -51,9 +51,16 @@ let getAllDonate2Residence = async (req, res, next) => {
 let getDonate2ResidenceByResidence = async (req, res, next) => {
 	try {
 		if (!req.params.id) {
-			throw createHttpError(400, "params missing residence_id!");
+			throw createHttpError(400, "params missing residence_Number!");
 		}
-		let id = req.params.id;
+		let residence_number = req.params.id;
+		let residence = await Residence.findOne({
+			where: { isDeleted: false, residence_number: residence_number },
+		});
+		if (!residence) {
+			throw createHttpError(400, "Không có residence vs số number này!");
+		}
+		let { id } = residence;
 		await Donate2Residence.findAll({
 			where: { residence_id: id, isDeleted: false },
 			include: [
@@ -144,7 +151,7 @@ let getDonate2ResidenceByDonate = async (req, res, next) => {
 let createDonate2Residence = async (req, res, next) => {
 	try {
 		// chắc chắn phải có 3 trường này
-		console.log("==================");
+
 		console.log("req body", req.body);
 		let { donate_id, residence_number } = req.body;
 		if (!req.body || !donate_id || !residence_number) {

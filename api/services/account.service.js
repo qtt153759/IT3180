@@ -7,31 +7,22 @@ let handleUserLogin = (dataLogin) => {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const { email, password } = dataLogin;
-			const isExsit = await checkUserEmail(email);
-			if (!isExsit) {
-				throw createError(500, "your email isn't exsist");
-			}
+			if (!email || !password) throw createError.Unauthorized();
 
-			let user = await Account.findOne({
-				attributes: ["email", "role", "password", "demographic_id"], //select
+			const exist = await checkEmailExist(email);
+			if (!exist) throw createError.Unauthorized();
+
+			const user = await Account.findOne({
 				where: { email },
 				raw: true,
 			});
 
-			if (!user) {
-				throw createError(500, "user not found");
-			}
+			if (!user) throw createError.Unauthorized();
 
-			let correctPassword = await bcrypt.compareSync(
-				password,
-				user.password
-			);
+			let correctPassword = bcrypt.compareSync(password, user.password);
 
-			if (!correctPassword) {
-				throw createError(500, "wrong password");
-			}
-
-			delete user.password; //sau khi attributes ma muon an thuoc tinh nao thi delete
+			if (!correctPassword) throw createError.Unauthorized();
+			delete user.password;
 			resolve(user);
 		} catch (err) {
 			reject(err);
@@ -39,45 +30,33 @@ let handleUserLogin = (dataLogin) => {
 	});
 };
 
-let createUserAccount = (dataRegister) => {
+let createUserAccount = ({ email, password, role, username }) => {
 	return new Promise(async (resolve, reject) => {
 		try {
-			let userData = {};
-			let isExsit = await checkUserEmail(dataRegister.email); //kiem tra email co ton tai
-			if (isExsit) {
-				throw createError(500, "Your email has already exsited");
-			} else {
-				let hashPasswordFromBcrypt = await hashUserPassword(
-					dataRegister.password
-				);
-				await Account.create({
-					email: dataRegister.email,
-					password: hashPasswordFromBcrypt,
-					role: dataRegister.role,
-					demographic_id: dataRegister.demographic_id,
-				});
-				userData.errMessage = "Register successful";
-				delete dataRegister.password;
-				userData.user = dataRegister;
-			}
-			resolve(userData);
-		} catch (er) {
-			reject(er);
+			let hashedPassword = await hashUserPassword(password);
+
+			const account = await Account.create({
+				email,
+				password: hashedPassword,
+				role,
+				username,
+			});
+
+			resolve(account);
+		} catch (err) {
+			reject(err);
 		}
 	});
 };
 
-let checkUserEmail = async (userEmail) => {
+let checkEmailExist = async (email) => {
 	return new Promise(async (resolve, reject) => {
 		try {
 			let user = await Account.findOne({
-				where: { email: userEmail },
+				where: { email },
 			});
-			if (user) {
-				resolve(true);
-			} else {
-				resolve(false);
-			}
+
+			resolve(user ? true : false);
 		} catch (err) {
 			reject(err);
 		}
@@ -85,15 +64,16 @@ let checkUserEmail = async (userEmail) => {
 };
 
 let hashUserPassword = (password) => {
-	return new Promise(async (resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		try {
-			let hashPassword = await bcrypt.hashSync(password, salt);
+			let hashPassword = bcrypt.hashSync(password, salt);
 			resolve(hashPassword);
-		} catch (ex) {
-			reject(ex);
+		} catch (err) {
+			reject(err);
 		}
 	});
 };
+
 module.exports = {
 	//luu y jo duong exports={handleUserLogin:handleUserLogin}  vi se co lôi handleUserLogin is not function=>luc nao cung dung module.export
 	handleUserLogin,

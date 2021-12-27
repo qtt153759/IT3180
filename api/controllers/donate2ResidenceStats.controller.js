@@ -60,10 +60,17 @@ let getResidenceStatsById = async (req, res, next) => {
 	try {
 		let page = parseInt(req.query.page) || 1;
 		let limit = parseInt(req.query.limit) || 10;
-		let { id } = req.params;
-
+		let { residence_number } = req.params;
+		//check xem có hộ đấy ko
+		const residenceExist = await Residence.findOne({
+			where: { residence_number: residence_number, isDeleted: false },
+		});
+		if (!residenceExist) {
+			throw createHttpError(400, "residence is not Exist!");
+		}
+		let residence_id = residenceExist.id;
 		Donate2Residence.findAll({
-			where: { isDeleted: false, residence_id: id },
+			where: { isDeleted: false, residence_id: residence_id },
 			limit: limit,
 			offset: (page - 1) * limit,
 			attributes: [

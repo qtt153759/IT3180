@@ -2,9 +2,11 @@ const express = require("express");
 const route = express.Router();
 const residenceController = require("../controllers/residence.controller");
 const authen = require("../middlewares/authen");
+const author = require("../middlewares/author");
+const role = require("../constance/role");
 
 // get thay đổi của hộ khẩu
-route.get("/change/:id", authen, residenceController.getResidenceChange);
+route.get("/change/:id", residenceController.getResidenceChange);
 
 route.get("/", residenceController.getAll);
 route.get("/:id", residenceController.getResidenceById);
