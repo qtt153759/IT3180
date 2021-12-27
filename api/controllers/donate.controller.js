@@ -9,8 +9,26 @@ let getDonate = async (req, res, next) => {
 		if (req.query.type) {
 			condition.type = req.query.type;
 		}
-		await Donate.findAll({ where: condition })
+		Donate.findAll({ where: condition })
 			.then((data) => {
+				res.send(createSuccess(data));
+			})
+			.catch((err) => {
+				next(createHttpError(500, err));
+			});
+	} catch (err) {
+		next(err);
+	}
+};
+let getDonateById = async (req, res, next) => {
+	try {
+		const id = req.params.id;
+		console.log("id", id);
+		Donate.findOne({
+			where: { isDeleted: false, id: id },
+		})
+			.then((data) => {
+				console.log("data", data);
 				res.send(createSuccess(data));
 			})
 			.catch((err) => {
@@ -113,4 +131,5 @@ module.exports = {
 	createDonate,
 	updateDonate,
 	deleteDonate,
+	getDonateById,
 };
