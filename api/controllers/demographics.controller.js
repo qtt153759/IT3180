@@ -15,9 +15,17 @@ let createDemographics = async (req, res, next) => {
 	try {
 		const { error } = demographicsValidator(req.body);
 		if (error) throw createHttpError(500, error.details[0].message);
-		let { residenceId, relationshipWithHeader } = req.body;
-
-		req.body.residenceId = residenceId;
+		let { residenceId, relationshipWithHeader, identityCardNumber } =
+			req.body;
+		if (!(residenceId && relationshipWithHeader && identityCardNumber)) {
+			throw createHttpError(400, "Missing parameter");
+		}
+		let existDemographic = await Demographics.findOne({
+			where: { identityCardNumber: identityCardNumber },
+		});
+		if (existDemographic) {
+			throw createHttpError(400, "identityCardNumber is already exist");
+		}
 
 		let demographic = await Demographics.create(req.body);
 

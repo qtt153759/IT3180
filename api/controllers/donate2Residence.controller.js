@@ -51,16 +51,9 @@ let getAllDonate2Residence = async (req, res, next) => {
 let getDonate2ResidenceByResidence = async (req, res, next) => {
 	try {
 		if (!req.params.id) {
-			throw createHttpError(400, "params missing residence_Number!");
+			throw createHttpError(400, "params missing residence_id!");
 		}
-		let residence_number = req.params.id;
-		let residence = await Residence.findOne({
-			where: { isDeleted: false, residence_number: residence_number },
-		});
-		if (!residence) {
-			throw createHttpError(400, "Không có residence vs số number này!");
-		}
-		let { id } = residence;
+		let id = req.params.id;
 		await Donate2Residence.findAll({
 			where: { residence_id: id, isDeleted: false },
 			include: [
@@ -151,7 +144,6 @@ let getDonate2ResidenceByDonate = async (req, res, next) => {
 let createDonate2Residence = async (req, res, next) => {
 	try {
 		// chắc chắn phải có 3 trường này
-
 		console.log("req body", req.body);
 		let { donate_id, residence_number } = req.body;
 		if (!req.body || !donate_id || !residence_number) {
@@ -167,6 +159,9 @@ let createDonate2Residence = async (req, res, next) => {
 				400,
 				"residence is not Exist vs cái number này!"
 			);
+		}
+		if (!residenceExist.headerId) {
+			throw createHttpError(400, "residence doesn't have header!");
 		}
 		let residence_id = residenceExist.id;
 		//Check xem có trùng ko
@@ -245,6 +240,9 @@ let updateDonate2Residence = async (req, res, next) => {
 		});
 		if (!residenceExist) {
 			throw createHttpError(400, "residence is not Exist!");
+		}
+		if (!residenceExist.headerId) {
+			throw createHttpError(400, "residence doesn't have header!");
 		}
 		let residence_id = residenceExist.id;
 		//check xem có khoản phí đó không

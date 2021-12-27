@@ -11,12 +11,16 @@ const relationship = require("../constance/relationship");
 // Created and save a new residence
 let create = async (req, res, next) => {
 	try {
-		let { provinceId, districtId, wardId } = req.body;
-		if (!(provinceId && districtId && wardId)) {
+		let { residence_number, provinceId, districtId, wardId } = req.body;
+		if (!(provinceId && districtId && wardId && residence_number)) {
 			throw createHttpError(400, "body missing field!");
 		}
-		
-
+		let existResidence = await Residences.findOne({
+			where: { residence_number: residence_number },
+		});
+		if (existResidence) {
+			throw createHttpError(400, "residence_number is already exist");
+		}
 		const data = await Residences.create(req.body);
 
 		return res.send(createSuccess(data));
